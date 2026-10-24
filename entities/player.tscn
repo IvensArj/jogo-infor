@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://cadhptthj1uij"]
+
+[ext_resource type="Script" uid="uid://ndyolomsqrf" path="res://scripts/player/character_body_2d.gd" id="1_merdl"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cyt5c"]
+size = Vector2(20, 28.23529)
+
+[node name="Player" type="CharacterBody2D" unique_id=1477927824 groups=["Player"]]
+z_index = 1
+position = Vector2(552, 416)
+script = ExtResource("1_merdl")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=854536230]
+position = Vector2(0, -8)
+scale = Vector2(1.7, 1.7)
+shape = SubResource("RectangleShape2D_cyt5c")

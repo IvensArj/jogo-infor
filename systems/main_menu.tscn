@@ -1,0 +1,40 @@
+[gd_scene format=3 uid="uid://dh745vglfp8go"]
+
+[ext_resource type="Script" uid="uid://gab71pkkqexk" path="res://main_menu.gd" id="1_a7oru"]
+
+[node name="MainMenu" type="Control" unique_id=650429481]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_a7oru")
+first_level_path = "uid://b2l05tyokd31p"
+
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1997945947]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=201140900]
+layout_mode = 2
+
+[node name="GameTitle" type="Label" parent="CenterContainer/VBoxContainer" unique_id=198436326]
+layout_mode = 2
+text = "NOME DO JOGO"
+
+[node name="NewGameButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=1381119535]
+layout_mode = 2
+text = "NOVO JOGO"
+
+[node name="ContinueButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=203650456]
+layout_mode = 2
+text = "CONTINUAR"
+
+[node name="ExitButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=910985151]
+layout_mode = 2
+text = "SAIR"

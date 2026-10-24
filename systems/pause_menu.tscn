@@ -1,0 +1,44 @@
+[gd_scene format=3 uid="uid://dt7mgt15prhgh"]
+
+[ext_resource type="Script" uid="uid://7h7737udnpk2" path="res://pause_menu.gd" id="1_4mawg"]
+
+[node name="PauseMenu" type="CanvasLayer" unique_id=1875475443]
+script = ExtResource("1_4mawg")
+main_menu_path = "uid://dh745vglfp8go"
+
+[node name="PausePanel" type="ColorRect" parent="." unique_id=1298672231]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0627451, 0.09411765, 0.14901961, 0.8)
+
+[node name="CenterContainer" type="CenterContainer" parent="PausePanel" unique_id=901985213]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PausePanel/CenterContainer" unique_id=1207434024]
+layout_mode = 2
+
+[node name="PauseTitle" type="Label" parent="PausePanel/CenterContainer/VBoxContainer" unique_id=272653707]
+layout_mode = 2
+
+[node name="ResumeButton" type="Button" parent="PausePanel/CenterContainer/VBoxContainer" unique_id=1137504781]
+layout_mode = 2
+text = "Continuar"
+
+[node name="SaveButton" type="Button" parent="PausePanel/CenterContainer/VBoxContainer" unique_id=182411566]
+layout_mode = 2
+text = "Salvar jogo"
+
+[node name="MainMenuButton" type="Button" parent="PausePanel/CenterContainer/VBoxContainer" unique_id=1473616811]
+layout_mode = 2
+text = "Menu Principal"
+
+[node name="StatusLabel" type="Label" parent="PausePanel/CenterContainer/VBoxContainer" unique_id=2131605951]
+layout_mode = 2

@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="DialogueData" format=3 uid="uid://bawhl30tr6r6j"]
+
+[ext_resource type="Script" uid="uid://coueymhloxmji" path="res://dialogue/data/dialogue_line.gd" id="1_kpdff"]
+[ext_resource type="Script" uid="uid://dxyq65temt6o0" path="res://dialogue/data/dialogue_data.gd" id="2_0n884"]
+
+[sub_resource type="Resource" id="Resource_x6uah"]
+script = ExtResource("1_kpdff")
+speaker = "Pedro Piadas"
+text = "Sabe qual raça de cachorro que pula mais alto que um prédio?"
+metadata/_custom_type_script = "uid://coueymhloxmji"
+
+[sub_resource type="Resource" id="Resource_1lpqh"]
+script = ExtResource("1_kpdff")
+speaker = "Player"
+text = "Não..."
+metadata/_custom_type_script = "uid://coueymhloxmji"
+
+[sub_resource type="Resource" id="Resource_f4wo4"]
+script = ExtResource("1_kpdff")
+speaker = "Pedro Piadas"
+text = "Qualquer uma, ué. Prédio não pula."
+metadata/_custom_type_script = "uid://coueymhloxmji"
+
+[resource]
+script = ExtResource("2_0n884")
+lines = Array[ExtResource("1_kpdff")]([SubResource("Resource_x6uah"), SubResource("Resource_1lpqh"), SubResource("Resource_f4wo4")])
+metadata/_custom_type_script = "uid://dxyq65temt6o0"
