@@ -35,6 +35,8 @@ A história, os personagens, os objetivos e as fases serão definidos e aprimora
 - **Menu principal:** interface de entrada e navegação.
 - **Menu de pausa:** possibilidade de interromper e retomar a partida.
 
+O funcionamento, os testes e as limitações do sistema estão na [documentação de salvamento e restauração](docs/salvamento.md).
+
 ### 🚧 Em desenvolvimento
 
 As próximas funcionalidades serão definidas de acordo com o planejamento da equipe. Entre as possibilidades estão:

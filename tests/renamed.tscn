@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://objects/collectible.gd" id="1"]
+[ext_resource type="Script" path="res://interactions/dialogue_trigger.gd" id="2"]
+
+[node name="Renamed" type="Node2D"]
+
+[node name="Player" type="CharacterBody2D" parent="." groups=["Player"]]
+
+[node name="Container" type="Node2D" parent="."]
+
+[node name="RenamedCoin" type="Area2D" parent="Container"]
+script = ExtResource("1")
+persistent_id = "test_level/coin_001"
+
+[node name="RenamedTrigger" type="Area2D" parent="Container"]
+script = ExtResource("2")
+persistent_id = "test_level/intro"
