@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 DialogueManager="*uid://h1eqmdobr3ki"
 SaveManager="*uid://bohofnubgps3p"
 GameState="*uid://ddl3bu7ieqvut"
+InputDeviceManager="*uid://bihn365j1glh"
 
 [display]
 

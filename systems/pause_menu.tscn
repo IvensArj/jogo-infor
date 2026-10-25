@@ -7,6 +7,7 @@ script = ExtResource("1_4mawg")
 main_menu_path = "uid://dh745vglfp8go"
 
 [node name="PausePanel" type="ColorRect" parent="." unique_id=1298672231]
+visible = false
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0

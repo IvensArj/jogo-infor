@@ -12,6 +12,7 @@ corner_radius_bottom_left = 15
 script = ExtResource("1_8lmct")
 
 [node name="DialoguePanel" type="PanelContainer" parent="." unique_id=984582022]
+visible = false
 anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
