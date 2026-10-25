@@ -1,42 +1,47 @@
-
 extends Area2D
 
 @export_group("Diálogo")
 @export var dialogue: DialogueData
-
 @export_group("Persistência")
-@export var one_shot: bool = true
+@export var one_shot := true
 @export var persistent_id: String = ""
+var already_triggered := false
 
-var already_triggered: bool = false
+
+func uses_persistence() -> bool:
+	return one_shot
+
+
+func get_persistent_id() -> String:
+	return persistent_id
 
 
 func _ready() -> void:
-	if one_shot and not persistent_id.is_empty():
-		already_triggered = GameState.is_event_complete(
-			persistent_id
-		)
-
+	GameState.progress_changed.connect(apply_persistent_state)
 	body_entered.connect(_on_body_entered)
+	apply_persistent_state()
+
+
+func apply_persistent_state() -> void:
+	# Este método também recebe progress_changed diretamente.
+	if not is_inside_tree():
+		return
+	var ancestor: Node = self
+	while ancestor != null:
+		if ancestor.is_queued_for_deletion():
+			return
+		ancestor = ancestor.get_parent()
+	already_triggered = one_shot and GameState.is_event_complete(persistent_id)
 
 
 func _on_body_entered(body: Node2D) -> void:
-	if not body.is_in_group("Player"):
+	if SaveManager.is_loading():
 		return
-
-	if one_shot and already_triggered:
+	if not body.is_in_group("Player") or (one_shot and already_triggered):
 		return
-
-	if DialogueManager.is_active:
+	if one_shot and not GameState.is_valid_id(persistent_id):
 		return
-
-	var started := DialogueManager.start_dialogue(dialogue)
-
-	if not started:
+	if DialogueManager.is_active or not DialogueManager.start_dialogue(dialogue):
 		return
-
 	if one_shot:
-		already_triggered = true
-
-		if not persistent_id.is_empty():
-			GameState.complete_event(persistent_id)
+		GameState.complete_event(persistent_id)

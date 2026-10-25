@@ -74,12 +74,13 @@ func _on_save() -> void:
 
 
 func _on_main_menu() -> void:
+	if SaveManager.is_loading():
+		return
+
 	if main_menu_path.is_empty():
 		push_error("Configure Main Menu Path no Inspector.")
 		return
 
 	close_menu()
-
-	SaveManager.pending_save.clear()
 
 	get_tree().change_scene_to_file(main_menu_path)

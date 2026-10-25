@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://objects/collectible.gd" id="1"]
+[ext_resource type="Script" path="res://interactions/dialogue_trigger.gd" id="2"]
+
+[node name="Level" type="Node2D"]
+
+[node name="Player" type="CharacterBody2D" parent="." groups=["Player"]]
+position = Vector2(10, 20)
+
+[node name="Coin" type="Area2D" parent="."]
+script = ExtResource("1")
+persistent_id = "test_level/coin_001"
+
+[node name="Trigger" type="Area2D" parent="."]
+script = ExtResource("2")
+persistent_id = "test_level/intro"
