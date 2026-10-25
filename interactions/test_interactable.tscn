@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://voui0eo18e22"]
+
+[ext_resource type="Script" uid="uid://bakm1oesert1c" path="res://interactions/interactable.gd" id="1_lfcq6"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_tnd71"]
+size = Vector2(32, 40)
+
+[node name="TestInteractable" type="Area2D" unique_id=1365846380]
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("1_lfcq6")
+interaction_name = "Teste"
+action_text = "Examinar"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=380428662]
+position = Vector2(0, 4)
+shape = SubResource("RectangleShape2D_tnd71")
+
+[node name="PromptAnchor" type="Marker2D" parent="." unique_id=136068340]
