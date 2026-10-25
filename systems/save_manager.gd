@@ -185,10 +185,32 @@ func continue_game() -> bool:
 	return _request_transition(data, true)
 
 
+
 func new_game(first_level_path: String) -> bool:
 	if _loading or _saving:
 		return false
-	return _request_transition({"scene": first_level_path, "world": {}}, false)
+
+	var scene_path := first_level_path
+
+	# Converte UID da Godot para caminho res://.
+	if scene_path.begins_with("uid://"):
+		var resource_id := ResourceUID.text_to_id(scene_path)
+
+		if not ResourceUID.has_id(resource_id):
+			push_error("[SAVE] UID da fase inicial não encontrado.")
+			return false
+
+		scene_path = ResourceUID.get_id_path(resource_id)
+
+	if not ResourceLoader.exists(scene_path, "PackedScene"):
+		push_error("[SAVE] Fase inicial não encontrada: " + scene_path)
+		return false
+
+	return _request_transition(
+		{"scene": scene_path, "world": {}},
+		false
+	)
+
 
 
 func _instantiate_scene(path: String) -> Node:
