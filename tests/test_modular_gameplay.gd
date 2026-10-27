@@ -103,6 +103,7 @@ func _run() -> void:
 	_test_abilities()
 	_test_conditions()
 	await _test_actions()
+	await _test_triggers_and_puzzle()
 	fixture.free()
 	GameState.import_data(original)
 	print("Modular tests: %d verificações, %d falhas." % [checks, failures])
@@ -337,3 +338,48 @@ func _test_actions() -> void:
 	await frames()
 	source.free()
 	door.free()
+
+
+func _test_triggers_and_puzzle() -> void:
+	var trigger: GameplayEventTrigger = load("res://gameplay/objects/event_trigger/event_trigger.tscn").instantiate()
+	trigger.position = Vector2(1000, 0)
+	trigger.persistent_completion = true
+	trigger.event_id = "modular_tests/trigger"
+	var condition := FlagRequirement.new()
+	condition.flag_id = "modular_tests/permission"
+	condition.failure_message = "Leia a carta primeiro."
+	trigger.condition = condition
+	var reward := CollectItemEffect.new()
+	reward.item_id = "modular_tests/reward"
+	trigger.effects.assign([reward])
+	fixture.add_child(trigger)
+	check(not trigger.interact(player) and not GameState.has_item(reward.item_id), "gatilho bloqueado não recompensa")
+	check(trigger.get_block_reason(player) == condition.failure_message, "gatilho mostra mensagem de condição")
+	GameState.set_flag(condition.flag_id, true)
+	trigger.effects.assign([FailingEffect.new()])
+	check(not trigger.interact(player) and not GameState.is_event_complete(trigger.event_id), "ação com falha não conclui evento")
+	trigger.effects.assign([reward])
+	check(trigger.interact(player) and GameState.is_event_complete(trigger.event_id), "gatilho interativo conclui após recompensa")
+	check(not trigger.interact(player), "gatilho persistente não repete")
+	var saved := GameState.export_data()
+	GameState.reset_progress()
+	GameState.import_data(saved)
+	check(trigger.has_interacted and GameState.has_item(reward.item_id), "estado persistente reaplicado sem recompensa")
+	trigger.free()
+	var area: GameplayEventTrigger = load("res://gameplay/objects/event_trigger/event_trigger.tscn").instantiate()
+	area.position = Vector2(1000, 0)
+	area.activation_mode = GameplayEventTrigger.ActivationMode.AREA_ENTRY
+	area.one_shot = true
+	var flag := SetFlagEffect.new()
+	flag.flag_id = "modular_tests/area"
+	area.effects.assign([flag])
+	fixture.add_child(area)
+	SaveManager.set("_loading", true)
+	area.body_entered.emit(player)
+	SaveManager.set("_loading", false)
+	check(not GameState.get_flag(flag.flag_id), "entrada em área durante carga ignora ações")
+	area.position = player.position
+	await frames(3)
+	check(GameState.get_flag(flag.flag_id) and area.has_interacted, "entrada física real ativa gatilho de área")
+	check(not area.can_select(player) and not area.interact(player), "área não oferece prompt e one-shot não repete")
+	area.free()

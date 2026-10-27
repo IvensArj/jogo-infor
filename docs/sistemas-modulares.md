@@ -53,3 +53,13 @@ diálogo ou target_path relativo à origem. O alvo precisa ser FlagInteractable
 Restauração usa apply_persistent_state sem recompensas. Recompensas são idempotentes.
 Diálogo falha com outra interface bloqueante. Ações anteriores a uma falha podem
 permanecer aplicadas; preflight não é uma transação.
+
+## Gatilhos
+
+Instancie gameplay/objects/event_trigger/event_trigger.tscn. Selecione INTERACTION
+ou AREA_ENTRY, condition opcional e pelo menos uma ação em effects.
+Configure one_shot para a instância ou persistent_completion/event_id para persistir.
+Área usa grupo Player, camada 8 e máscara 1; interação usa o indicador existente.
+Condição falsa impede ações. Falha não grava conclusão. Durante carga, somente
+apply_persistent_state projeta GameState; recompensas não são reexecutadas.
+DialogueTrigger legado é preservado.
