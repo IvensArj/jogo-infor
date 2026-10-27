@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://drcs7ags8kwxs"]
 
-[ext_resource type="Script" uid="uid://blsupf6isr0rr" path="res://interactions/npc.gd" id="1_a28jl"]
-[ext_resource type="Resource" uid="uid://bawhl30tr6r6j" path="res://dialogues/npc_example.tres" id="2_lr2uj"]
-[ext_resource type="Texture2D" uid="uid://cubeqfhrjalvi" path="res://interactions/pedropiadas.jpg" id="3_eb4aj"]
+[ext_resource type="Script" uid="uid://blsupf6isr0rr" path="res://gameplay/npc/npc.gd" id="1_a28jl"]
+[ext_resource type="Resource" uid="uid://bawhl30tr6r6j" path="res://gameplay/npc/dialogues/npc_example.tres" id="2_lr2uj"]
+[ext_resource type="Texture2D" uid="uid://cubeqfhrjalvi" path="res://assets/sprites/npc/pedropiadas.jpg" id="3_eb4aj"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_01132"]
 size = Vector2(72, 72)

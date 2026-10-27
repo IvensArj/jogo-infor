@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cubeqfhrjalvi"
-path="res://.godot/imported/pedropiadas.jpg-aa562903bb797181ec0fdace66d34611.ctex"
+uid="uid://cs3apollac2f"
+path="res://.godot/imported/icone-ivy.png-f3b1659fa76182fa61b4d61f5dc8807a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://interactions/pedropiadas.jpg"
-dest_files=["res://.godot/imported/pedropiadas.jpg-aa562903bb797181ec0fdace66d34611.ctex"]
+source_file="res://assets/sprites/player/icone-ivy.png"
+dest_files=["res://.godot/imported/icone-ivy.png-f3b1659fa76182fa61b4d61f5dc8807a.ctex"]
 
 [params]
 

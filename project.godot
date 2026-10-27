@@ -11,16 +11,16 @@ config_version=5
 [application]
 
 config/name="JogoInfor"
-run/main_scene="uid://dh745vglfp8go"
+run/main_scene="res://ui/main_menu/main_menu.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://icon.svg"
 
 [autoload]
 
-DialogueManager="*uid://h1eqmdobr3ki"
-SaveManager="*uid://bohofnubgps3p"
-GameState="*uid://ddl3bu7ieqvut"
-InputDeviceManager="*uid://bihn365j1glh"
+DialogueManager="*res://systems/dialogue/dialogue_manager.gd"
+SaveManager="*res://systems/save/save_manager.gd"
+GameState="*res://systems/progress/game_state.gd"
+InputDeviceManager="*res://systems/input/input_device_manager.gd"
 
 [display]
 

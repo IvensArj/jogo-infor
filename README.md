@@ -37,6 +37,21 @@ A história, os personagens, os objetivos e as fases serão definidos e aprimora
 
 O funcionamento, os testes e as limitações do sistema estão na [documentação de salvamento e restauração](docs/salvamento.md).
 
+### Organização do projeto
+
+| Pasta | O que encontrar |
+|---|---|
+| `assets/` | Imagens, ícones e pacotes de arte com suas licenças. |
+| `gameplay/` | Jogador, câmera, NPCs e objetos reutilizáveis; cenas e scripts juntos. |
+| `scenes/levels/` | Fases completas; os caminhos das fases existentes são estáveis para os saves. |
+| `scenes/prototypes/` | Exemplos e experimentos isolados. |
+| `systems/` | Progresso, salvamento, entrada, diálogos e lógica de interação compartilhada. |
+| `ui/` | Menus, interface de diálogo e indicador de interação. |
+| `tests/` | Testes automatizados e suas cenas auxiliares. |
+| `docs/` | Guias de desenvolvimento e funcionamento dos sistemas. |
+
+Comece pelo [guia de organização e construção de fases](docs/organizacao.md).
+
 ### 🚧 Em desenvolvimento
 
 As próximas funcionalidades serão definidas de acordo com o planejamento da equipe. Entre as possibilidades estão:

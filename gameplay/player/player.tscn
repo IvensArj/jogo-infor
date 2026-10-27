@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://cadhptthj1uij"]
 
-[ext_resource type="Script" uid="uid://ndyolomsqrf" path="res://scripts/player/character_body_2d.gd" id="1_merdl"]
-[ext_resource type="Script" uid="uid://imo1ex4wvi5s" path="res://interactions/interactor.gd" id="2_b0kkn"]
-[ext_resource type="PackedScene" uid="uid://bplydw35aboeo" path="res://interactions/interaction_prompt.tscn" id="3_e4p34"]
+[ext_resource type="Script" uid="uid://ndyolomsqrf" path="res://gameplay/player/player.gd" id="1_merdl"]
+[ext_resource type="Script" uid="uid://imo1ex4wvi5s" path="res://systems/interaction/interactor.gd" id="2_b0kkn"]
+[ext_resource type="PackedScene" uid="uid://bplydw35aboeo" path="res://ui/interaction_prompt/interaction_prompt.tscn" id="3_e4p34"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_cyt5c"]
 size = Vector2(20, 28.23529)

@@ -1,4 +1,4 @@
-extends "res://systems/save_manager.gd"
+extends "res://systems/save/save_manager.gd"
 
 var fail_target: String = ""
 var remove_target_before_failure := false

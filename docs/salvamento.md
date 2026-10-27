@@ -1,6 +1,6 @@
 # Salvamento e restauração
 
-O sistema persiste a cena, a posição global do jogador e o progresso do mundo em JSON. A implementação está em [SaveManager](../systems/save_manager.gd) e [GameState](../systems/game_state.gd).
+O sistema persiste a cena, a posição global do jogador e o progresso do mundo em JSON. A implementação está em [SaveManager](../systems/save/save_manager.gd) e [GameState](../systems/progress/game_state.gd).
 
 ## O que foi corrigido
 
@@ -111,9 +111,9 @@ IDs antigos permanecem exatamente iguais, inclusive maiúsculas; não há conver
 
 Um objeto persistente expõe `get_persistent_id()` e `apply_persistent_state()`. Opcionalmente, `uses_persistence()` permite desativar a exigência de ID, como nos gatilhos com `one_shot = false`.
 
-O [coletável](../objects/collectible.gd) deve ser anexado a um `Area2D` com `CollisionShape2D`. A coleta o esconde e desativa seu monitoramento, preservando a instância para reset e rollback. A atribuição adiada de `monitoring` é sempre agendada, mesmo que o valor atual já coincida: coletar e resetar no mesmo frame precisa preservar a última atualização.
+O [coletável](../gameplay/objects/collectible/collectible.gd) deve ser anexado a um `Area2D` com `CollisionShape2D`. A coleta o esconde e desativa seu monitoramento, preservando a instância para reset e rollback. A atribuição adiada de `monitoring` é sempre agendada, mesmo que o valor atual já coincida: coletar e resetar no mesmo frame precisa preservar a última atualização.
 
-O [gatilho de diálogo](../interactions/dialogue_trigger.gd) recupera o evento concluído e reaplica `already_triggered` em notificações de progresso. Ambos observam `GameState.progress_changed` e verificam diretamente se estão na árvore e se algum ancestral está em exclusão, pois essas notificações não passam pela travessia do carregador. Seus handlers de `body_entered` também ignoram interações durante `SaveManager.is_loading()` para não iniciar coleta ou diálogo na preparação da cena.
+O [gatilho de diálogo](../gameplay/objects/dialogue_trigger/dialogue_trigger.gd) recupera o evento concluído e reaplica `already_triggered` em notificações de progresso. Ambos observam `GameState.progress_changed` e verificam diretamente se estão na árvore e se algum ancestral está em exclusão, pois essas notificações não passam pela travessia do carregador. Seus handlers de `body_entered` também ignoram interações durante `SaveManager.is_loading()` para não iniciar coleta ou diálogo na preparação da cena.
 
 ## Como validar
 
