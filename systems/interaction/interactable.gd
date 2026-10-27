@@ -49,14 +49,7 @@ func invalidate_requirements() -> void:
 
 
 static func is_live(node: Variant) -> bool:
-	if not is_instance_valid(node) or not node.is_inside_tree():
-		return false
-	var ancestor: Node = node
-	while ancestor != null:
-		if ancestor.is_queued_for_deletion():
-			return false
-		ancestor = ancestor.get_parent()
-	return true
+	return GameplayContext.is_live(node)
 
 
 func is_available(interactor: Node2D) -> bool:
@@ -116,21 +109,27 @@ func interact(interactor: Node2D) -> bool:
 		return false
 	var sequence: Array[InteractionEffect] = effects.duplicate()
 	for effect in sequence:
-		if effect == null or not effect.is_valid():
+		if effect == null or not effect.validate_context(interactor, self):
 			interaction_denied.emit(interactor, "Consequência não configurada corretamente.")
 			return false
 	_executing = true
-	for effect in sequence:
-		var success: bool = effect.execute(interactor, self)
-		if not is_instance_valid(self):
-			return false
-		if not success or not is_live(self) or not is_live(interactor) or SaveManager.is_loading():
-			_executing = false
-			return false
-	has_interacted = true
-	_on_interact(interactor)
+	var success := InteractionEffect.execute_sequence(sequence, interactor, self)
 	if not is_instance_valid(self):
-		return true
+		return false
+	if not success:
+		_executing = false
+		return false
+	var previously_interacted := has_interacted
+	has_interacted = true
+	var completed_successfully := _complete_interaction(interactor)
+	if not is_instance_valid(self):
+		return completed_successfully
+	if not completed_successfully:
+		has_interacted = previously_interacted
+		_executing = false
+		if is_live(self) and is_live(interactor):
+			interaction_denied.emit(interactor, "Não foi possível concluir a interação.")
+		return false
 	if is_live(self) and is_live(interactor):
 		interacted.emit(interactor)
 	if is_instance_valid(self):
@@ -141,6 +140,12 @@ func interact(interactor: Node2D) -> bool:
 
 func _on_interact(_interactor: Node2D) -> void:
 	pass
+
+
+# Mantém o hook legado; novos componentes podem propagar falhas de conclusão.
+func _complete_interaction(interactor: Node2D) -> bool:
+	_on_interact(interactor)
+	return true
 
 
 func get_interaction_text() -> String:
