@@ -181,6 +181,13 @@ A identificação dos integrantes e suas contribuições será adicionada confor
 
 ---
 
+## Laboratório de sistemas
+
+Abra `scenes/levels/systems_test_entry.tscn` e execute com F6 para testar leitura,
+habilidades, condições, eventos e puzzle em uma sessão isolada dos saves normais.
+Consulte [sistemas modulares](docs/sistemas-modulares.md) para configuração no
+Inspector, APIs e testes automatizados.
+
 ## 📌 Estado do projeto
 
 **Em desenvolvimento — versão inicial.**

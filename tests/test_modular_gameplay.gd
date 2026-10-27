@@ -105,6 +105,7 @@ func _run() -> void:
 	await _test_actions()
 	await _test_triggers_and_puzzle()
 	fixture.free()
+	await _test_lab_persistence()
 	GameState.import_data(original)
 	print("Modular tests: %d verificações, %d falhas." % [checks, failures])
 	get_tree().quit(0 if failures == 0 else 1)
@@ -415,3 +416,111 @@ func _test_triggers_and_puzzle() -> void:
 	check(restored.is_completed and restored.current_step == 0, "puzzle restaura conclusão sem executar ações")
 	puzzle.free()
 	restored.free()
+
+
+func fingerprint(path: String) -> String:
+	return FileAccess.get_sha256(path) if FileAccess.file_exists(path) else "ausente"
+
+
+func settle_load() -> void:
+	for frame in range(90):
+		await get_tree().process_frame
+		if not SaveManager.is_loading():
+			await get_tree().process_frame
+			return
+	check(false, "transição termina dentro do limite")
+
+
+func _test_lab_persistence() -> void:
+	var original_world := GameState.export_data()
+	var original_paths: Array[String] = [SaveManager.save_path, SaveManager.temp_path, SaveManager.backup_path, SaveManager.backup_temp_path]
+	var hashes: Array[String] = []
+	for path in original_paths:
+		hashes.append(fingerprint(path))
+	check(get_tree().change_scene_to_file(SystemsTestSession.ENTRY) == OK, "entrada segura do laboratório carrega")
+	await frames(5)
+	await settle_load()
+	var lab := get_tree().current_scene
+	var session := SystemsTestSession.current(get_tree())
+	check(lab.scene_file_path == SystemsTestSession.LEVEL and session != null, "sessão isolada abre fase integrada")
+	check(SaveManager.save_path != original_paths[0], "laboratório redireciona save normal")
+	check(not GameState.has_ability("dash") and not GameState.has_ability("double_jump") and GameState.has_ability("wall_jump"), "perfil inicial do laboratório correto")
+	var actor: CharacterBody2D = lab.get_node("Player")
+	actor.set_physics_process(false)
+	var document: Inspectable = lab.get_node("AreaA/Letter")
+	check(document.interact(actor), "carta integrada abre interface compartilhada")
+	DialogueManager.end_inspection()
+	await frames()
+	for object_name in ["Object", "Book", "LongDocument"]:
+		var inspected: Inspectable = lab.get_node("AreaA/" + object_name)
+		check(inspected.interact(actor), "conteúdo usa mesma UI: " + object_name)
+		check(lab.get_node("InspectionUI").title_label.text == inspected.content.title, "título correto: " + object_name)
+		if object_name == "Object":
+			check(lab.get_node("InspectionUI").image_view.visible, "imagem opcional é exibida")
+		DialogueManager.end_inspection()
+		await frames()
+	var unlock: GameplayEventTrigger = lab.get_node("AreaC/UnlockDash")
+	check(unlock.interact(actor) and GameState.has_ability("dash"), "objeto integrado desbloqueia dash")
+	var puzzle: SequencePuzzle = lab.get_node("AreaD/Puzzle")
+	puzzle.submit_switch("systems_test/switch_2", actor)
+	check(puzzle.current_step == 1, "tentativa parcial existe em memória")
+	actor.global_position = Vector2(400, 400)
+	var save_button: Button = lab.get_node("TestHUD/Panel/Column/Buttons/Save")
+	save_button.grab_focus()
+	send_button(JOY_BUTTON_A)
+	await frames()
+	check(SaveManager.has_save(), "controle aceita botão nativo e salva laboratório isolado")
+	send_button(JOY_BUTTON_DPAD_RIGHT)
+	check(lab.get_node("TestHUD/Panel/Column/Buttons/Reload").has_focus(), "direcional navega entre controles nativos")
+	var saved_position := actor.global_position
+	var loaded_positions: Array[Vector2] = []
+	var on_loaded := func():
+		var restored_actor: CharacterBody2D = get_tree().current_scene.get_node("Player")
+		loaded_positions.append(restored_actor.global_position)
+		restored_actor.set_physics_process(false)
+	SaveManager.game_loaded.connect(on_loaded)
+	check(SaveManager.continue_game(), "recarrega laboratório pelo SaveManager existente")
+	await settle_load()
+	lab = get_tree().current_scene
+	actor = lab.get_node("Player")
+	actor.set_physics_process(false)
+	puzzle = lab.get_node("AreaD/Puzzle")
+	check(not loaded_positions.is_empty() and loaded_positions[0] == saved_position, "fluxo existente restaura posição do jogador antes da física retomar")
+	check(GameState.has_ability("dash") and not GameState.has_ability("double_jump"), "perfil não sobrescreve habilidades carregadas")
+	check(lab.get_node("AreaA/Letter").has_read and puzzle.current_step == 0, "leitura persiste e tentativa parcial desaparece")
+	var before_reads := GameState.export_data()
+	check(lab.get_node("AreaA/Letter").interact(actor), "documento carregado reabre")
+	DialogueManager.end_inspection()
+	check(GameState.export_data() == before_reads, "reabertura após load não repete primeira leitura")
+	await frames()
+	var trigger: GameplayEventTrigger = lab.get_node("AreaB/ActivateDoor")
+	check(trigger.interact(actor) and lab.get_node("AreaB/Door").activated, "leitura libera mecanismo pela condição Resource")
+	for switch_name in ["Switch2", "Switch1", "Switch3"]:
+		check(lab.get_node("AreaD/" + switch_name).interact(actor), "switch integrado usa Interactable: " + switch_name)
+	check(puzzle.is_completed and lab.get_node("AreaD/Door").activated, "puzzle integrado abre porta e conclui")
+	check(SaveManager.save_game() and FileAccess.file_exists(SaveManager.backup_path), "segunda gravação mantém backup isolado")
+	check(lab.get_node("AreaA/Letter").interact(actor), "abre inspeção antes da transição")
+	check(SaveManager.continue_game(), "carrega conclusão permanente")
+	await settle_load()
+	check(not DialogueManager.inspection_active, "transição fecha inspeção sem manter bloqueio")
+	lab = get_tree().current_scene
+	lab.get_node("Player").set_physics_process(false)
+	check(lab.get_node("AreaD/Puzzle").is_completed and lab.get_node("AreaD/Door").activated, "puzzle e porta restaurados sem reaplicar recompensa")
+	check(lab.get_node("AreaB/ActivateDoor").has_interacted, "evento persistente restaurado")
+	check(session.restart_progress(), "reset de teste usa nova partida existente")
+	await settle_load()
+	lab = get_tree().current_scene
+	lab.get_node("Player").set_physics_process(false)
+	check(not GameState.has_ability("dash") and not lab.get_node("AreaD/Puzzle").is_completed and not lab.get_node("AreaD/Door").activated, "reset do teste limpa apenas sua progressão")
+	check(SaveManager.continue_game(), "save de teste permanece carregável após reset")
+	await settle_load()
+	check(GameState.has_ability("dash"), "reload depois de nova partida restaura desbloqueio salvo")
+	SaveManager.game_loaded.disconnect(on_loaded)
+	var directory := session.directory
+	check(get_tree().change_scene_to_file("res://ui/main_menu/main_menu.tscn") == OK, "saída do laboratório carrega menu")
+	await frames(4)
+	check(SystemsTestSession.current(get_tree()) == null and SaveManager.save_path == original_paths[0], "saída restaura caminhos e remove sessão")
+	check(GameState.export_data() == original_world, "saída restaura progresso anterior da campanha")
+	check(not DirAccess.dir_exists_absolute(directory), "limpa somente diretório temporário da sessão")
+	for index in range(original_paths.size()):
+		check(fingerprint(original_paths[index]) == hashes[index], "arquivo normal preservado: " + original_paths[index])

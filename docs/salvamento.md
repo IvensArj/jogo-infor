@@ -115,6 +115,25 @@ O [coletável](../gameplay/objects/collectible/collectible.gd) deve ser anexado 
 
 O [gatilho de diálogo](../gameplay/objects/dialogue_trigger/dialogue_trigger.gd) recupera o evento concluído e reaplica `already_triggered` em notificações de progresso. Ambos observam `GameState.progress_changed` e verificam diretamente se estão na árvore e se algum ancestral está em exclusão, pois essas notificações não passam pela travessia do carregador. Seus handlers de `body_entered` também ignoram interações durante `SaveManager.is_loading()` para não iniciar coleta ou diálogo na preparação da cena.
 
+## Leitura, habilidades e puzzles
+
+Os [sistemas modulares](sistemas-modulares.md) mantêm o mesmo JSON v2. Leituras
+persistentes usam seu ID em `world.completed_events`; eventos de primeira leitura
+e puzzles concluídos usam IDs próprios nessa mesma categoria. Desbloqueios usam
+flags booleanas `abilities/dash`, `abilities/double_jump` e `abilities/wall_jump`.
+Itens e flags de mecanismos continuam usando as categorias existentes.
+
+Nenhum campo novo foi introduzido. Saves v1/v2 sem flags de habilidade utilizam o
+perfil padrão legado, com todas as habilidades habilitadas. Flags explícitas,
+inclusive `false`, têm prioridade sobre o perfil. Importação e restauração não
+emitem novos desbloqueios, primeiras leituras ou recompensas; objetos apenas
+projetam seu estado persistente. Tentativas parciais de puzzle não são exportadas.
+
+O laboratório usa paths temporários e um snapshot do GameState durante a sessão;
+seus controles não gravam no slot normal. O perfil restrito do laboratório é
+aplicado no início/reset do teste, nunca em cada carregamento. SaveManager,
+validação, backup, rollback e restauração da posição permanecem inalterados.
+
 ## Como validar
 
 Na raiz do projeto, com Godot 4.7 disponível como `godot`:

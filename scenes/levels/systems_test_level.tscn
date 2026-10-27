@@ -1,0 +1,316 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/levels/systems_test/systems_test_level.gd" id="Level"]
+[ext_resource type="PackedScene" path="res://gameplay/player/player.tscn" id="Player"]
+[ext_resource type="PackedScene" path="res://gameplay/camera/camera.tscn" id="Camera"]
+[ext_resource type="PackedScene" path="res://gameplay/objects/inspectable/inspectable.tscn" id="Inspectable"]
+[ext_resource type="PackedScene" path="res://gameplay/objects/event_trigger/event_trigger.tscn" id="Trigger"]
+[ext_resource type="PackedScene" path="res://gameplay/objects/door/flag_door.tscn" id="Door"]
+[ext_resource type="PackedScene" path="res://gameplay/objects/sequence_puzzle/sequence_switch.tscn" id="Switch"]
+[ext_resource type="Script" path="res://gameplay/objects/sequence_puzzle/sequence_puzzle.gd" id="Puzzle"]
+[ext_resource type="PackedScene" path="res://ui/inspection/inspection_ui.tscn" id="InspectionUI"]
+[ext_resource type="PackedScene" path="res://ui/dialogue/dialogue_ui.tscn" id="DialogueUI"]
+[ext_resource type="PackedScene" path="res://ui/pause_menu/pause_menu.tscn" id="PauseMenu"]
+[ext_resource type="Resource" path="res://scenes/levels/systems_test/letter.tres" id="Letter"]
+[ext_resource type="Resource" path="res://scenes/levels/systems_test/object.tres" id="Object"]
+[ext_resource type="Resource" path="res://scenes/levels/systems_test/book.tres" id="Book"]
+[ext_resource type="Resource" path="res://scenes/levels/systems_test/long_document.tres" id="Long"]
+[ext_resource type="Script" path="res://systems/interaction/effects/interaction_effect.gd" id="Effect"]
+[ext_resource type="Script" path="res://systems/interaction/effects/unlock_ability_effect.gd" id="Unlock"]
+[ext_resource type="Script" path="res://systems/interaction/effects/activate_mechanism_effect.gd" id="Activate"]
+[ext_resource type="Script" path="res://systems/interaction/effects/complete_event_effect.gd" id="Complete"]
+[ext_resource type="Script" path="res://systems/interaction/effects/start_dialogue_effect.gd" id="StartDialogue"]
+[ext_resource type="Script" path="res://systems/interaction/requirements/interaction_requirement.gd" id="Requirement"]
+[ext_resource type="Script" path="res://systems/interaction/requirements/event_requirement.gd" id="ReadRequirement"]
+[ext_resource type="Script" path="res://systems/interaction/requirements/flag_requirement.gd" id="FlagRequirement"]
+[ext_resource type="Script" path="res://systems/dialogue/data/dialogue_data.gd" id="DialogueData"]
+[ext_resource type="Script" path="res://systems/dialogue/data/dialogue_line.gd" id="DialogueLine"]
+[ext_resource type="PackedScene" path="res://gameplay/npc/npc.tscn" id="NPC"]
+
+[sub_resource type="RectangleShape2D" id="FloorShape"]
+size = Vector2(4000, 40)
+[sub_resource type="StyleBoxFlat" id="HUDStyle"]
+bg_color = Color(0.07, 0.1, 0.14, 1)
+[sub_resource type="RectangleShape2D" id="PlatformShape"]
+size = Vector2(120, 20)
+[sub_resource type="RectangleShape2D" id="WallShape"]
+size = Vector2(24, 150)
+[sub_resource type="Resource" id="ReadLetter"]
+script = ExtResource("ReadRequirement")
+event_id = "systems_test/letter_read"
+failure_message = "Leia a carta da área A primeiro."
+[sub_resource type="Resource" id="ManualLock"]
+script = ExtResource("FlagRequirement")
+flag_id = "systems_test/manual_open_disabled"
+failure_message = "Use o acionador desta área."
+[sub_resource type="Resource" id="UnlockDash"]
+script = ExtResource("Unlock")
+ability_id = "dash"
+[sub_resource type="Resource" id="UnlockDouble"]
+script = ExtResource("Unlock")
+ability_id = "double_jump"
+[sub_resource type="Resource" id="OpenB"]
+script = ExtResource("Activate")
+target_path = NodePath("../Door")
+[sub_resource type="Resource" id="OpenD"]
+script = ExtResource("Activate")
+target_path = NodePath("../Door")
+[sub_resource type="Resource" id="PuzzleReward"]
+script = ExtResource("Complete")
+event_id = "systems_test/puzzle_reward"
+[sub_resource type="Resource" id="TestLine"]
+script = ExtResource("DialogueLine")
+speaker = "Teste"
+text = "Conteúdo provisório. Este diálogo usa o sistema existente. E ou Y avança; o jogador continua sujeito à gravidade."
+[sub_resource type="Resource" id="TestDialogue"]
+script = ExtResource("DialogueData")
+lines = Array[ExtResource("DialogueLine")]([SubResource("TestLine")])
+[sub_resource type="Resource" id="DialogueAction"]
+script = ExtResource("StartDialogue")
+dialogue = SubResource("TestDialogue")
+
+[node name="SystemsTestLevel" type="Node2D"]
+script = ExtResource("Level")
+
+[node name="Backdrop" type="Polygon2D" parent="."]
+z_index = -10
+polygon = PackedVector2Array(-1000, -1000, 4500, -1000, 4500, 1500, -1000, 1500)
+color = Color(0.08, 0.12, 0.18, 1)
+
+[node name="Player" parent="." instance=ExtResource("Player")]
+position = Vector2(60, 400)
+[node name="Visual" type="Polygon2D" parent="Player"]
+polygon = PackedVector2Array(-16, -30, 16, -30, 16, 14, -16, 14)
+color = Color(0.3, 0.8, 1, 1)
+[node name="Camera" parent="." instance=ExtResource("Camera")]
+position = Vector2(150, 260)
+limit_left = -100
+limit_top = -100
+limit_right = 3650
+limit_bottom = 600
+[node name="Terrain" type="Node2D" parent="."]
+[node name="Floor" type="StaticBody2D" parent="Terrain"]
+position = Vector2(1700, 470)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Terrain/Floor"]
+shape = SubResource("FloorShape")
+[node name="Visual" type="Polygon2D" parent="Terrain/Floor"]
+polygon = PackedVector2Array(-2000, -20, 2000, -20, 2000, 20, -2000, 20)
+color = Color(0.15, 0.25, 0.34, 1)
+
+[node name="AreaA" type="Node2D" parent="."]
+[node name="Title" type="Label" parent="AreaA"]
+position = Vector2(90, 260)
+text = "A · Leitura e inspeção\nCarta, objeto, livro e texto longo"
+
+[node name="Letter" parent="AreaA" instance=ExtResource("Inspectable")]
+position = Vector2(150, 450)
+persistent_id = "systems_test/letter_read"
+content = ExtResource("Letter")
+first_read_event_id = "systems_test/first_letter_open"
+[node name="Label" type="Label" parent="AreaA/Letter"]
+position = Vector2(-50, 10)
+text = "Carta"
+
+[node name="Object" parent="AreaA" instance=ExtResource("Inspectable")]
+position = Vector2(320, 450)
+persistent_id = "systems_test/object_read"
+content = ExtResource("Object")
+[node name="Label" type="Label" parent="AreaA/Object"]
+position = Vector2(-50, 10)
+text = "Objeto com imagem"
+
+[node name="Book" parent="AreaA" instance=ExtResource("Inspectable")]
+position = Vector2(490, 450)
+persistent_id = "systems_test/book_read"
+content = ExtResource("Book")
+[node name="Label" type="Label" parent="AreaA/Book"]
+position = Vector2(-50, 10)
+text = "Livro"
+
+[node name="LongDocument" parent="AreaA" instance=ExtResource("Inspectable")]
+position = Vector2(660, 450)
+persistent_id = "systems_test/long_read"
+content = ExtResource("Long")
+[node name="Label" type="Label" parent="AreaA/LongDocument"]
+position = Vector2(-50, 10)
+text = "Documento longo"
+
+[node name="NPC" parent="AreaA" instance=ExtResource("NPC")]
+position = Vector2(800, 414)
+dialogue = SubResource("TestDialogue")
+[node name="AreaB" type="Node2D" parent="."]
+[node name="Title" type="Label" parent="AreaB"]
+position = Vector2(900, 180)
+text = "B · Condição de leitura\nLeia a carta e use o acionador.\nA passagem inferior permanece livre."
+[node name="ActivateDoor" parent="AreaB" instance=ExtResource("Trigger")]
+position = Vector2(930, 450)
+interaction_name = "Acionador de leitura"
+action_text = "Abrir mecanismo"
+condition = SubResource("ReadLetter")
+event_id = "systems_test/read_trigger"
+persistent_completion = true
+effects = Array[ExtResource("Effect")]([SubResource("OpenB")])
+[node name="Door" parent="AreaB" instance=ExtResource("Door")]
+position = Vector2(1160, 350)
+persistent_id = "systems_test/read_door"
+state_flag = "systems_test/read_door_open"
+requirements = Array[ExtResource("Requirement")]([SubResource("ManualLock")])
+effects = Array[ExtResource("Effect")]([])
+show_when_locked = false
+
+[node name="AreaC" type="Node2D" parent="."]
+[node name="Title" type="Label" parent="AreaC"]
+position = Vector2(1360, 160)
+text = "C · Habilidades\nDesbloqueie dash e pulo duplo.\nPulo de parede já está liberado.\nCaminho seguro por baixo."
+[node name="UnlockDash" parent="AreaC" instance=ExtResource("Trigger")]
+position = Vector2(1400, 450)
+interaction_name = "Liberar dash"
+action_text = "Liberar dash"
+event_id = "systems_test/dash_unlock"
+persistent_completion = true
+effects = Array[ExtResource("Effect")]([SubResource("UnlockDash")])
+[node name="UnlockDoubleJump" parent="AreaC" instance=ExtResource("Trigger")]
+position = Vector2(1580, 450)
+interaction_name = "Liberar pulo duplo"
+action_text = "Liberar pulo duplo"
+event_id = "systems_test/double_unlock"
+persistent_completion = true
+effects = Array[ExtResource("Effect")]([SubResource("UnlockDouble")])
+
+[node name="FirstPlatform" type="StaticBody2D" parent="AreaC"]
+position = Vector2(1760, 390)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AreaC/FirstPlatform"]
+shape = SubResource("PlatformShape")
+[node name="Visual" type="Polygon2D" parent="AreaC/FirstPlatform"]
+polygon = PackedVector2Array(-60, -10, 60, -10, 60, 10, -60, 10)
+color = Color(0.4, 0.65, 0.55, 1)
+
+[node name="SecondPlatform" type="StaticBody2D" parent="AreaC"]
+position = Vector2(1940, 310)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AreaC/SecondPlatform"]
+shape = SubResource("PlatformShape")
+[node name="Visual" type="Polygon2D" parent="AreaC/SecondPlatform"]
+polygon = PackedVector2Array(-60, -10, 60, -10, 60, 10, -60, 10)
+color = Color(0.4, 0.65, 0.55, 1)
+
+[node name="WallEntry" type="StaticBody2D" parent="AreaC"]
+position = Vector2(2090, 390)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AreaC/WallEntry"]
+shape = SubResource("PlatformShape")
+[node name="Visual" type="Polygon2D" parent="AreaC/WallEntry"]
+polygon = PackedVector2Array(-60, -10, 60, -10, 60, 10, -60, 10)
+color = Color(0.4, 0.65, 0.55, 1)
+
+[node name="LeftWall" type="StaticBody2D" parent="AreaC"]
+position = Vector2(2170, 265)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AreaC/LeftWall"]
+shape = SubResource("WallShape")
+[node name="Visual" type="Polygon2D" parent="AreaC/LeftWall"]
+polygon = PackedVector2Array(-12, -75, 12, -75, 12, 75, -12, 75)
+color = Color(0.6, 0.55, 0.4, 1)
+
+[node name="RightWall" type="StaticBody2D" parent="AreaC"]
+position = Vector2(2260, 265)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AreaC/RightWall"]
+shape = SubResource("WallShape")
+[node name="Visual" type="Polygon2D" parent="AreaC/RightWall"]
+polygon = PackedVector2Array(-12, -75, 12, -75, 12, 75, -12, 75)
+color = Color(0.6, 0.55, 0.4, 1)
+
+[node name="AreaEvent" parent="AreaC" instance=ExtResource("Trigger")]
+position = Vector2(2400, 450)
+interaction_name = "Entrada automática"
+activation_mode = 1
+event_id = "systems_test/area_entry"
+persistent_completion = true
+effects = Array[ExtResource("Effect")]([SubResource("DialogueAction")])
+[node name="Label" type="Label" parent="AreaC/AreaEvent"]
+position = Vector2(-100, -90)
+text = "Entre para testar diálogo automático"
+
+[node name="AreaD" type="Node2D" parent="."]
+[node name="Title" type="Label" parent="AreaD"]
+position = Vector2(2630, 230)
+text = "D · Sequência de botões\nOrdem: 2 → 1 → 3\nErro reinicia a tentativa."
+[node name="Puzzle" type="Node2D" parent="AreaD"]
+script = ExtResource("Puzzle")
+ordered_switch_ids = Array[String](["systems_test/switch_2", "systems_test/switch_1", "systems_test/switch_3"])
+persistent_id = "systems_test/sequence_complete"
+success_actions = Array[ExtResource("Effect")]([SubResource("OpenD"), SubResource("PuzzleReward")])
+
+[node name="Switch1" parent="AreaD" node_paths=PackedStringArray("puzzle") instance=ExtResource("Switch")]
+position = Vector2(2670, 450)
+switch_id = "systems_test/switch_1"
+puzzle = NodePath("../Puzzle")
+interaction_name = "Botão 1"
+action_text = "Acionar botão 1"
+[node name="Label" type="Label" parent="AreaD/Switch1"]
+position = Vector2(-25, 10)
+text = "Botão 1"
+
+[node name="Switch2" parent="AreaD" node_paths=PackedStringArray("puzzle") instance=ExtResource("Switch")]
+position = Vector2(2840, 450)
+switch_id = "systems_test/switch_2"
+puzzle = NodePath("../Puzzle")
+interaction_name = "Botão 2"
+action_text = "Acionar botão 2"
+[node name="Label" type="Label" parent="AreaD/Switch2"]
+position = Vector2(-25, 10)
+text = "Botão 2"
+
+[node name="Switch3" parent="AreaD" node_paths=PackedStringArray("puzzle") instance=ExtResource("Switch")]
+position = Vector2(3010, 450)
+switch_id = "systems_test/switch_3"
+puzzle = NodePath("../Puzzle")
+interaction_name = "Botão 3"
+action_text = "Acionar botão 3"
+[node name="Label" type="Label" parent="AreaD/Switch3"]
+position = Vector2(-25, 10)
+text = "Botão 3"
+
+[node name="Door" parent="AreaD" instance=ExtResource("Door")]
+position = Vector2(3260, 350)
+persistent_id = "systems_test/puzzle_door"
+state_flag = "systems_test/puzzle_door_open"
+requirements = Array[ExtResource("Requirement")]([SubResource("ManualLock")])
+effects = Array[ExtResource("Effect")]([])
+show_when_locked = false
+
+[node name="InspectionUI" parent="." instance=ExtResource("InspectionUI")]
+[node name="DialogueUI" parent="." instance=ExtResource("DialogueUI")]
+[node name="PauseMenu" parent="." instance=ExtResource("PauseMenu")]
+
+[node name="TestHUD" type="CanvasLayer" parent="."]
+layer = 5
+[node name="Panel" type="PanelContainer" parent="TestHUD"]
+theme_override_styles/panel = SubResource("HUDStyle")
+offset_left = 12.0
+offset_top = 10.0
+offset_right = 1060.0
+[node name="Column" type="VBoxContainer" parent="TestHUD/Panel"]
+layout_mode = 2
+[node name="Instructions" type="Label" parent="TestHUD/Panel/Column"]
+layout_mode = 2
+text = "LABORATÓRIO ISOLADO · A/D ou direcional: mover · Espaço/A: pular · Shift/X: dash · E/Y: interagir\nEsc/Start: pausa · Inspeção: E/Y/Esc/B fecha; setas/direcional rolam. Saves normais preservados."
+[node name="Status" type="Label" parent="TestHUD/Panel/Column"]
+layout_mode = 2
+[node name="Feedback" type="Label" parent="TestHUD/Panel/Column"]
+layout_mode = 2
+text = "Comece pela carta na área A. Use os botões abaixo com mouse ou foco nativo."
+[node name="Buttons" type="HBoxContainer" parent="TestHUD/Panel/Column"]
+layout_mode = 2
+[node name="Save" type="Button" parent="TestHUD/Panel/Column/Buttons"]
+layout_mode = 2
+text = "Salvar teste"
+[node name="Reload" type="Button" parent="TestHUD/Panel/Column/Buttons"]
+layout_mode = 2
+text = "Recarregar teste"
+[node name="Attempt" type="Button" parent="TestHUD/Panel/Column/Buttons"]
+layout_mode = 2
+text = "Reiniciar tentativa"
+[node name="Reset" type="Button" parent="TestHUD/Panel/Column/Buttons"]
+layout_mode = 2
+text = "Zerar progresso do teste"
+[node name="Exit" type="Button" parent="TestHUD/Panel/Column/Buttons"]
+layout_mode = 2
+text = "Sair do laboratório"
