@@ -37,6 +37,22 @@ A história, os personagens, os objetivos e as fases serão definidos e aprimora
 
 O funcionamento, os testes e as limitações do sistema estão na [documentação de salvamento e restauração](docs/salvamento.md).
 
+### Organização do projeto
+
+| Pasta | O que encontrar |
+|---|---|
+| `assets/` | Imagens, ícones e pacotes de arte com suas licenças. |
+| `gameplay/` | Jogador, câmera, NPCs e objetos reutilizáveis; cenas e scripts juntos. |
+| `scenes/levels/` | Fases completas; os caminhos das fases existentes são estáveis para os saves. |
+| `scenes/prototypes/` | Exemplos e experimentos isolados. |
+| `systems/` | Progresso, salvamento, entrada, diálogos e lógica de interação compartilhada. |
+| `ui/` | Menus, interface de diálogo e indicador de interação. |
+| `tests/` | Testes automatizados e suas cenas auxiliares. |
+| `docs/` | Guias de desenvolvimento e funcionamento dos sistemas. |
+
+Comece pelo [guia de organização e construção de fases](docs/organizacao.md).
+Para criar puzzles pelo Inspector, consulte o [guia de interações](docs/interacoes.md).
+
 ### 🚧 Em desenvolvimento
 
 As próximas funcionalidades serão definidas de acordo com o planejamento da equipe. Entre as possibilidades estão:
@@ -164,6 +180,13 @@ Projeto desenvolvido por estudantes da **EEEP Jeová Costa Lima**, com colabora�
 A identificação dos integrantes e suas contribuições será adicionada conforme a organização da equipe.
 
 ---
+
+## Laboratório de sistemas
+
+Abra `scenes/levels/systems_test_entry.tscn` e execute com F6 para testar leitura,
+habilidades, condições, eventos e puzzle em uma sessão isolada dos saves normais.
+Consulte [sistemas modulares](docs/sistemas-modulares.md) para configuração no
+Inspector, APIs e testes automatizados.
 
 ## 📌 Estado do projeto
 

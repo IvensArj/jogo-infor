@@ -1,12 +1,12 @@
 [gd_scene format=4 uid="uid://b2l05tyokd31p"]
 
-[ext_resource type="PackedScene" uid="uid://cqyn8n78hqb72" path="res://entities/camera.tscn" id="1_fr1um"]
-[ext_resource type="PackedScene" uid="uid://cadhptthj1uij" path="res://entities/player.tscn" id="2_cyt5c"]
+[ext_resource type="PackedScene" uid="uid://cqyn8n78hqb72" path="res://gameplay/camera/camera.tscn" id="1_fr1um"]
+[ext_resource type="PackedScene" uid="uid://cadhptthj1uij" path="res://gameplay/player/player.tscn" id="2_cyt5c"]
 [ext_resource type="Texture2D" uid="uid://cceyk44h0w64t" path="res://assets/sprites/terrain.png" id="2_yautc"]
-[ext_resource type="PackedScene" uid="uid://drcs7ags8kwxs" path="res://interactions/npc.tscn" id="4_v45ci"]
-[ext_resource type="PackedScene" uid="uid://bs06gc300x6tx" path="res://dialogue/dialogue_ui.tscn" id="5_48ne7"]
-[ext_resource type="PackedScene" uid="uid://dt7mgt15prhgh" path="res://systems/pause_menu.tscn" id="6_6xh4u"]
-[ext_resource type="PackedScene" uid="uid://voui0eo18e22" path="res://interactions/test_interactable.tscn" id="7_cyt5c"]
+[ext_resource type="PackedScene" uid="uid://drcs7ags8kwxs" path="res://gameplay/npc/npc.tscn" id="4_v45ci"]
+[ext_resource type="PackedScene" uid="uid://bs06gc300x6tx" path="res://ui/dialogue/dialogue_ui.tscn" id="5_48ne7"]
+[ext_resource type="PackedScene" uid="uid://dt7mgt15prhgh" path="res://ui/pause_menu/pause_menu.tscn" id="6_6xh4u"]
+[ext_resource type="PackedScene" uid="uid://voui0eo18e22" path="res://scenes/prototypes/test_interactable.tscn" id="7_cyt5c"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_fr1um"]
 texture = ExtResource("2_yautc")

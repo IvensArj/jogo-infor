@@ -1,0 +1,50 @@
+[gd_scene format=3 uid="uid://bs06gc300x6tx"]
+
+[ext_resource type="Script" uid="uid://diwvsms2dwgkc" path="res://ui/dialogue/dialogue_ui.gd" id="1_8lmct"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_km8cd"]
+corner_radius_top_left = 15
+corner_radius_top_right = 15
+corner_radius_bottom_right = 15
+corner_radius_bottom_left = 15
+
+[node name="DialogueUI" type="CanvasLayer" unique_id=1218325424]
+script = ExtResource("1_8lmct")
+
+[node name="DialoguePanel" type="PanelContainer" parent="." unique_id=984582022]
+visible = false
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -136.0
+grow_horizontal = 2
+grow_vertical = 0
+offset_transform_enabled = true
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_km8cd")
+
+[node name="MarginContainer" type="MarginContainer" parent="DialoguePanel" unique_id=1254727427]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="DialoguePanel/MarginContainer" unique_id=2095981582]
+layout_mode = 2
+offset_transform_enabled = true
+theme_override_constants/separation = 8
+
+[node name="SpeakerName" type="Label" parent="DialoguePanel/MarginContainer/VBoxContainer" unique_id=412992149]
+layout_mode = 2
+
+[node name="DialogueText" type="RichTextLabel" parent="DialoguePanel/MarginContainer/VBoxContainer" unique_id=128329096]
+layout_mode = 2
+fit_content = true
+
+[node name="ContinueIndicator" type="Label" parent="DialoguePanel/MarginContainer/VBoxContainer" unique_id=1549819694]
+layout_mode = 2
+text = "▼"
+horizontal_alignment = 2
+vertical_alignment = 2

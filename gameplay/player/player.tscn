@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://cadhptthj1uij"]
+
+[ext_resource type="Script" uid="uid://ndyolomsqrf" path="res://gameplay/player/player.gd" id="1_merdl"]
+[ext_resource type="Script" uid="uid://imo1ex4wvi5s" path="res://systems/interaction/interactor.gd" id="2_b0kkn"]
+[ext_resource type="PackedScene" uid="uid://bplydw35aboeo" path="res://ui/interaction_prompt/interaction_prompt.tscn" id="3_e4p34"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cyt5c"]
+size = Vector2(20, 28.23529)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_7x1jh"]
+radius = 55.0
+
+[node name="Player" type="CharacterBody2D" unique_id=1477927824 groups=["Player"]]
+z_index = 1
+position = Vector2(552, 416)
+script = ExtResource("1_merdl")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=854536230]
+position = Vector2(0, -8)
+scale = Vector2(1.7, 1.7)
+shape = SubResource("RectangleShape2D_cyt5c")
+
+[node name="Interactor" type="Area2D" parent="." unique_id=2039793955]
+collision_layer = 0
+collision_mask = 8
+script = ExtResource("2_b0kkn")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactor" unique_id=1119944025]
+position = Vector2(0, -8)
+shape = SubResource("CircleShape2D_7x1jh")
+
+[node name="InteractionPrompt" parent="." unique_id=2110142043 instance=ExtResource("3_e4p34")]

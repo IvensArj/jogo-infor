@@ -1,0 +1,6 @@
+[gd_resource type="Resource" script_class="InspectionData" load_steps=2 format=3]
+[ext_resource type="Script" path="res://systems/inspection/inspection_data.gd" id="1"]
+[resource]
+script = ExtResource("1")
+title = "Livro de teste"
+body = "Capítulo provisório. Livros, cartas e descrições usam InspectionData e uma única interface compartilhada. Feche com E, Y, Esc ou B; o botão Fechar também aceita mouse e foco nativo."

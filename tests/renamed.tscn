@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3]
 
-[ext_resource type="Script" path="res://objects/collectible.gd" id="1"]
-[ext_resource type="Script" path="res://interactions/dialogue_trigger.gd" id="2"]
+[ext_resource type="Script" path="res://gameplay/objects/collectible/collectible.gd" id="1"]
+[ext_resource type="Script" path="res://gameplay/objects/dialogue_trigger/dialogue_trigger.gd" id="2"]
 
 [node name="Renamed" type="Node2D"]
 

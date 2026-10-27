@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="Script" path="res://gameplay/objects/sequence_puzzle/sequence_switch.gd" id="1"]
+[sub_resource type="RectangleShape2D" id="Area"]
+size = Vector2(32, 45)
+
+[node name="SequenceSwitch" type="Area2D"]
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("1")
+action_text = "Acionar botão"
+show_when_locked = false
+
+[node name="Visual" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-14, 0, -14, -32, 14, -32, 14, 0)
+color = Color(0.8, 0.5, 0.9, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -20)
+shape = SubResource("Area")

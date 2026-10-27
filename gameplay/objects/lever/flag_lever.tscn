@@ -1,0 +1,46 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://gameplay/objects/lever/flag_lever.gd" id="1"]
+[ext_resource type="Script" path="res://systems/interaction/requirements/flag_requirement.gd" id="2"]
+[ext_resource type="Script" path="res://systems/interaction/effects/set_flag_effect.gd" id="3"]
+
+[sub_resource type="Resource" id="Requirement"]
+script = ExtResource("2")
+flag_id = "test_level/lever_activated"
+expected_value = false
+
+[sub_resource type="Resource" id="Effect"]
+script = ExtResource("3")
+flag_id = "test_level/lever_activated"
+value = true
+
+[sub_resource type="RectangleShape2D" id="Area"]
+size = Vector2(32, 40)
+
+[node name="FlagLever" type="Area2D"]
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("1")
+interaction_name = "Alavanca"
+action_text = "Ativar alavanca"
+one_shot = true
+show_when_locked = false
+requirements = Array[ExtResource("2")]([SubResource("Requirement")])
+effects = Array[ExtResource("3")]([SubResource("Effect")])
+persistent_id = "test_level/lever_001"
+state_flag = "test_level/lever_activated"
+
+[node name="LeverVisual" type="Polygon2D" parent="."]
+position = Vector2(0, -8)
+polygon = PackedVector2Array(-4, 0, -4, -32, 4, -32, 4, 0)
+
+[node name="Base" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-14, 0, -10, -10, 10, -10, 14, 0)
+color = Color(0.4, 0.45, 0.5, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -20)
+shape = SubResource("Area")
+
+[node name="PromptAnchor" type="Marker2D" parent="."]
+position = Vector2(0, -40)

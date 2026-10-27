@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="AbilityProfile" load_steps=2 format=3]
+[ext_resource type="Script" path="res://systems/abilities/ability_profile.gd" id="1"]
+[resource]
+script = ExtResource("1")
+dash = false
+double_jump = false
+wall_jump = true

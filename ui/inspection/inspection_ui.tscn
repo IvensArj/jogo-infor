@@ -1,0 +1,66 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://ui/inspection/inspection_ui.gd" id="1"]
+
+[sub_resource type="StyleBoxFlat" id="PanelStyle"]
+bg_color = Color(0.055, 0.075, 0.11, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_left = 8
+corner_radius_bottom_right = 8
+
+[node name="InspectionUI" type="CanvasLayer"]
+layer = 20
+script = ExtResource("1")
+
+[node name="Panel" type="PanelContainer" parent="."]
+theme_override_styles/panel = SubResource("PanelStyle")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 40.0
+offset_top = 35.0
+offset_right = -40.0
+offset_bottom = -35.0
+
+[node name="Margin" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="Column" type="VBoxContainer" parent="Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Panel/Margin/Column"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Documento"
+
+[node name="Scroll" type="ScrollContainer" parent="Panel/Margin/Column"]
+layout_mode = 2
+size_flags_vertical = 3
+focus_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="Contents" type="VBoxContainer" parent="Panel/Margin/Column/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Image" type="TextureRect" parent="Panel/Margin/Column/Scroll/Contents"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 180)
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Body" type="RichTextLabel" parent="Panel/Margin/Column/Scroll/Contents"]
+layout_mode = 2
+size_flags_horizontal = 3
+fit_content = true
+scroll_active = false
+
+[node name="Close" type="Button" parent="Panel/Margin/Column"]
+layout_mode = 2
+text = "Fechar — E / Y / Esc / B"
