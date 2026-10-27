@@ -1,6 +1,10 @@
 extends Node
 
 signal progress_changed
+signal ability_unlocked(ability_id: String)
+
+const ABILITY_IDS: Array[String] = ["dash", "double_jump", "wall_jump"]
+@export var default_ability_profile: AbilityProfile = preload("res://systems/abilities/default_profile.tres")
 
 var collected_items: Dictionary = {}
 var completed_events: Dictionary = {}
@@ -105,3 +109,30 @@ func set_flag(flag_id: String, value: bool) -> void:
 
 func get_flag(flag_id: String) -> bool:
 	return flags.get(flag_id, false) == true
+
+
+func has_ability(ability_id: String) -> bool:
+	if not ABILITY_IDS.has(ability_id):
+		return false
+	var flag_id := "abilities/" + ability_id
+	if flags.has(flag_id):
+		return get_flag(flag_id)
+	return default_ability_profile != null and default_ability_profile.allows(ability_id)
+
+
+func unlock_ability(ability_id: String) -> bool:
+	if not ABILITY_IDS.has(ability_id) or has_ability(ability_id):
+		return false
+	set_flag("abilities/" + ability_id, true)
+	ability_unlocked.emit(ability_id)
+	return true
+
+
+# Usado na criação de uma sessão, nunca na reaplicação de um save.
+func apply_ability_profile(profile: AbilityProfile) -> bool:
+	if profile == null:
+		return false
+	for ability_id in ABILITY_IDS:
+		flags["abilities/" + ability_id] = profile.allows(ability_id)
+	progress_changed.emit()
+	return true

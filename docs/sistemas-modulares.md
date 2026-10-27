@@ -24,3 +24,13 @@ E/Y/Esc/B fecha; ui_up/down rola; botão Fechar aceita mouse. ui_cancel existent
 recebe Esc/B, sem ação ou Autoload novo. Fechar restaura foco e controle.
 Fonte inválida ou transição fecha a interface.
 Testes: godot --headless --path . res://tests/modular_runner.tscn
+
+## Habilidades
+
+AbilityProfile e systems/abilities/default_profile.tres configuram o padrão
+legado no Inspector, com dash, double_jump e wall_jump habilitados.
+GameState.has_ability consulta flags abilities/<id> antes do padrão.
+unlock_ability retorna true e emite ability_unlocked somente no primeiro desbloqueio.
+apply_ability_profile é exclusivo do início de uma sessão, nunca da recarga.
+Flags explícitas, inclusive false, persistem no JSON existente; reset limpa o
+progresso e volta ao perfil. O jogador só ganhou guardas, sem alterar parâmetros.

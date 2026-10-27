@@ -100,6 +100,7 @@ func _run() -> void:
 	inspection_ui = load("res://ui/inspection/inspection_ui.tscn").instantiate()
 	fixture.add_child(inspection_ui)
 	await _test_inspection()
+	_test_abilities()
 	fixture.free()
 	GameState.import_data(original)
 	print("Modular tests: %d verificações, %d falhas." % [checks, failures])
@@ -177,3 +178,65 @@ func _test_inspection() -> void:
 	check(not DialogueManager.inspection_active and not inspection_ui.panel.visible, "fonte excluída fecha inspeção")
 	menu.free()
 	previous_button.free()
+
+
+func _test_abilities() -> void:
+	var profile := AbilityProfile.new()
+	profile.dash = false
+	profile.double_jump = false
+	profile.wall_jump = false
+	GameState.apply_ability_profile(profile)
+	check(not GameState.has_ability("dash") and not GameState.has_ability("double_jump") and not GameState.has_ability("wall_jump"), "perfil bloqueia as três habilidades")
+	Input.action_press("dash")
+	player._try_start_dash(1.0)
+	Input.action_release("dash")
+	check(not player.is_dashing, "dash bloqueado não inicia")
+	player.floor_jump_available = false
+	player.air_jumps_left = 1
+	player.jump_buffer_timer = 1.0
+	check(not player._try_jump(false), "segundo pulo bloqueado")
+	player.floor_jump_available = true
+	check(player._try_jump(true), "pulo normal continua disponível com habilidades bloqueadas")
+	var probe := WallProbe.new()
+	var collision := CollisionShape2D.new()
+	collision.name = "CollisionShape2D"
+	collision.shape = RectangleShape2D.new()
+	probe.add_child(collision)
+	fixture.add_child(probe)
+	probe.set_physics_process(false)
+	probe.floor_jump_available = false
+	probe.air_jumps_left = 0
+	probe.test_wall_side = 1
+	probe.jump_buffer_timer = 1.0
+	check(not probe._try_jump(false), "pulo de parede bloqueado")
+	var unlocks: Array[String] = []
+	var on_unlock := func(id: String): unlocks.append(id)
+	GameState.ability_unlocked.connect(on_unlock)
+	for id in GameState.ABILITY_IDS:
+		check(GameState.unlock_ability(id) and not GameState.unlock_ability(id), "desbloqueio único: " + id)
+	check(unlocks.size() == 3 and not GameState.unlock_ability("inexistente"), "sinal não repete e ID desconhecido é rejeitado")
+	Input.action_press("dash")
+	player._try_start_dash(1.0)
+	Input.action_release("dash")
+	check(player.is_dashing, "dash desbloqueado funciona")
+	player._finish_dash()
+	player.jump_buffer_timer = 1.0
+	check(player._try_jump(false) and player.velocity.y < 0.0, "segundo pulo desbloqueado funciona")
+	check(probe._try_jump(false), "pulo de parede desbloqueado funciona")
+	probe.jump_buffer_timer = 1.0
+	check(not probe._try_jump(false), "mesma parede não permite escalada infinita")
+	probe.test_wall_side = -1
+	check(probe._try_jump(false) and probe.velocity.x < 0.0, "parede oposta permite pulo")
+	probe.test_wall_side = 1
+	probe.velocity.y = 180.0
+	probe._update_wall_slide(1.0 / 60.0, -1.0)
+	check(probe.velocity.y == probe.wall_slide_speed, "deslize de parede mantém limite existente")
+	var saved := GameState.export_data()
+	GameState.reset_progress()
+	check(GameState.has_ability("dash") and GameState.has_ability("double_jump") and GameState.has_ability("wall_jump"), "nova partida preserva perfil legado completo")
+	GameState.import_data(saved)
+	check(unlocks.size() == 3 and GameState.has_ability("dash"), "restauração não repete desbloqueios")
+	GameState.ability_unlocked.disconnect(on_unlock)
+	probe.free()
+	player.velocity = Vector2.ZERO
+	player.jump_buffer_timer = 0.0

@@ -346,6 +346,7 @@ func _try_jump(grounded: bool) -> bool:
 	# PRIORIDADE 2: pulo na parede oposta
 	if (
 		wall_side != 0
+		and GameState.has_ability("wall_jump")
 		and wall_side != last_wall_jump_side
 	):
 		_perform_jump()
@@ -367,7 +368,7 @@ func _try_jump(grounded: bool) -> bool:
 		return true
 
 	# PRIORIDADE 3: pulo aéreo
-	if air_jumps_left > 0:
+	if air_jumps_left > 0 and GameState.has_ability("double_jump"):
 		air_jumps_left -= 1
 
 		_perform_jump()
@@ -450,6 +451,8 @@ func _update_wall_slide(
 # ==========================================
 
 func _try_start_dash(direction: float) -> void:
+	if not GameState.has_ability("dash"):
+		return
 	if not Input.is_action_just_pressed("dash"):
 		return
 
