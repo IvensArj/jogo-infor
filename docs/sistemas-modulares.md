@@ -43,3 +43,13 @@ is_met(actor) retorna bool sem efeitos; is_configured valida configuração.
 ConditionGroup.conditions aceita ALL/ANY aninhados; ALL vazio true, ANY vazio false.
 Ciclos diretos/indiretos e filhos inválidos bloqueiam o grupo com aviso, sem pilha global.
 Flag válida ausente vale false; ID inválido nunca satisfaz um requisito.
+
+## Ações
+
+Nos effects existentes use SetFlagEffect, CollectItemEffect, CompleteEventEffect,
+UnlockAbilityEffect, StartDialogueEffect e ActivateMechanismEffect. Configure IDs,
+diálogo ou target_path relativo à origem. O alvo precisa ser FlagInteractable
+(como FlagDoor), habilitado e com IDs válidos; activate() é uma interface tipada.
+Restauração usa apply_persistent_state sem recompensas. Recompensas são idempotentes.
+Diálogo falha com outra interface bloqueante. Ações anteriores a uma falha podem
+permanecer aplicadas; preflight não é uma transação.

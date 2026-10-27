@@ -102,6 +102,7 @@ func _run() -> void:
 	await _test_inspection()
 	_test_abilities()
 	_test_conditions()
+	await _test_actions()
 	fixture.free()
 	GameState.import_data(original)
 	print("Modular tests: %d verificações, %d falhas." % [checks, failures])
@@ -165,6 +166,13 @@ func _test_inspection() -> void:
 	await frames()
 	DialogueManager.start_dialogue(make_dialogue())
 	check(not document.interact(player), "inspeção bloqueada durante diálogo")
+	DialogueManager.end_dialogue()
+	await frames()
+	var blocking_effect := StartDialogueEffect.new()
+	blocking_effect.dialogue = make_dialogue()
+	document.effects.assign([blocking_effect])
+	check(not document.interact(player) and not DialogueManager.inspection_active, "falha ao abrir inspeção após efeito conflitante é propagada")
+	document.effects.clear()
 	DialogueManager.end_dialogue()
 	await frames()
 	check(document.interact(player), "inspeção reabre após diálogo")
@@ -287,3 +295,45 @@ func _test_conditions() -> void:
 	check(not all.is_met(player), "ciclo direto é rejeitado")
 	all.conditions.clear()
 	check(ConditionGroup.new().is_met(player), "avaliação posterior é independente do ciclo anterior")
+
+
+func _test_actions() -> void:
+	var source := Interactable.new()
+	fixture.add_child(source)
+	var flag := SetFlagEffect.new()
+	flag.flag_id = "modular_tests/action_flag"
+	var item := CollectItemEffect.new()
+	item.item_id = "modular_tests/action_item"
+	var event := CompleteEventEffect.new()
+	event.event_id = "modular_tests/action_event"
+	var unlock := UnlockAbilityEffect.new()
+	unlock.ability_id = "dash"
+	source.effects.assign([flag, item, event, unlock])
+	check(source.interact(player), "ações existentes e desbloqueio executam em sequência")
+	var before := GameState.export_data()
+	check(source.interact(player) and GameState.export_data() == before, "recompensas repetidas são idempotentes")
+	var invalid := CollectItemEffect.new()
+	source.effects.assign([flag, invalid])
+	GameState.set_flag(flag.flag_id, false)
+	check(not source.interact(player) and not GameState.get_flag(flag.flag_id), "preflight inválido impede primeira ação")
+	source.effects.assign([flag, FailingEffect.new()])
+	check(not source.interact(player) and GameState.get_flag(flag.flag_id), "falha parcial é reportada sem alegar rollback")
+	var door: FlagDoor = load("res://gameplay/objects/door/flag_door.tscn").instantiate()
+	door.name = "ActionDoor"
+	door.persistent_id = "modular_tests/action_door"
+	door.state_flag = "modular_tests/action_door_open"
+	fixture.add_child(door)
+	var activate := ActivateMechanismEffect.new()
+	activate.target_path = source.get_path_to(door)
+	check(activate.validate_context(player, source) and activate.execute(player, source), "mecanismo é ativado pela interface tipada")
+	await frames()
+	check(door.activated and door.get_node("DoorBody/CollisionShape2D").disabled, "mecanismo atualiza visual e colisão")
+	activate.target_path = NodePath("ausente")
+	check(not activate.execute(player, source), "alvo ausente falha com segurança")
+	var start := StartDialogueEffect.new()
+	start.dialogue = make_dialogue()
+	check(start.execute(player, source) and not start.execute(player, source), "ação de diálogo respeita interface bloqueante")
+	DialogueManager.end_dialogue()
+	await frames()
+	source.free()
+	door.free()

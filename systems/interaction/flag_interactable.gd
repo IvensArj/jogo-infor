@@ -41,3 +41,13 @@ func apply_persistent_state() -> void:
 
 func _apply_visual_state() -> void:
 	pass
+
+
+# Interface tipada para ações; restauração continua usando apply_persistent_state.
+func activate() -> bool:
+	if not is_live(self) or not enabled or SaveManager.is_loading():
+		return false
+	if not GameState.is_valid_id(get_persistent_id()):
+		return false
+	GameState.set_flag(state_flag, true)
+	return activated
