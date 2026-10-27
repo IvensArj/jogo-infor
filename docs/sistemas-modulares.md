@@ -63,3 +63,13 @@ Configure one_shot para a instância ou persistent_completion/event_id para pers
 Condição falsa impede ações. Falha não grava conclusão. Durante carga, somente
 apply_persistent_state projeta GameState; recompensas não são reexecutadas.
 DialogueTrigger legado é preservado.
+
+## Puzzle
+
+Adicione Node2D com gameplay/objects/sequence_puzzle/sequence_puzzle.gd. Configure
+ordered_switch_ids e success_actions; permanent/persistent_id permitem persistir.
+Instancie sequence_switch.tscn, atribua switch_id estável e referência puzzle.
+submit_switch(id, actor) avança, reseta em erro ou conclui após ações bem-sucedidas.
+reset_attempt limpa só a tentativa local, que não entra no save.
+Sinais attempt_changed, correct_input, incorrect_input, completed e completion_failed
+permitem feedback. Porta restaura sua flag sem reexecutar recompensas.

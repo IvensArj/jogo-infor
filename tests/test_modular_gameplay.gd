@@ -383,3 +383,35 @@ func _test_triggers_and_puzzle() -> void:
 	check(GameState.get_flag(flag.flag_id) and area.has_interacted, "entrada física real ativa gatilho de área")
 	check(not area.can_select(player) and not area.interact(player), "área não oferece prompt e one-shot não repete")
 	area.free()
+
+	var puzzle := SequencePuzzle.new()
+	puzzle.name = "TestPuzzle"
+	puzzle.persistent_id = "modular_tests/puzzle"
+	puzzle.ordered_switch_ids.assign(["switch/a", "switch/b", "switch/c"])
+	var success := CompleteEventEffect.new()
+	success.event_id = "modular_tests/puzzle_reward"
+	puzzle.success_actions.assign([success])
+	fixture.add_child(puzzle)
+	check(puzzle.submit_switch("switch/a", player) and puzzle.current_step == 1, "primeiro switch avança tentativa")
+	check(not puzzle.submit_switch("switch/c", player) and puzzle.current_step == 0, "ordem errada reinicia tentativa")
+	puzzle.submit_switch("switch/a", player)
+	puzzle.reset_attempt()
+	check(puzzle.current_step == 0, "reset de tentativa é explícito")
+	puzzle.success_actions.assign([FailingEffect.new()])
+	puzzle.submit_switch("switch/a", player)
+	puzzle.submit_switch("switch/b", player)
+	check(not puzzle.submit_switch("switch/c", player) and not GameState.is_event_complete(puzzle.persistent_id), "falha de ação não persiste conclusão do puzzle")
+	puzzle.success_actions.assign([success])
+	for id in puzzle.ordered_switch_ids:
+		puzzle.submit_switch(id, player)
+	check(puzzle.is_completed and GameState.is_event_complete(success.event_id), "sequência completa executa recompensa")
+	var before := GameState.export_data()
+	check(not puzzle.submit_switch("switch/a", player) and before == GameState.export_data(), "conclusão duplicada não recompensa novamente")
+	var restored := SequencePuzzle.new()
+	restored.persistent_id = puzzle.persistent_id
+	restored.ordered_switch_ids = puzzle.ordered_switch_ids.duplicate()
+	restored.success_actions.assign([FailingEffect.new()])
+	fixture.add_child(restored)
+	check(restored.is_completed and restored.current_step == 0, "puzzle restaura conclusão sem executar ações")
+	puzzle.free()
+	restored.free()
