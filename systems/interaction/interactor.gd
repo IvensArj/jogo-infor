@@ -27,6 +27,8 @@ func _ready() -> void:
 	area_exited.connect(_on_area_exited)
 	DialogueManager.dialogue_started.connect(_update_target)
 	DialogueManager.dialogue_finished.connect(_update_target)
+	DialogueManager.inspection_started.connect(_update_target)
+	DialogueManager.inspection_finished.connect(_update_target)
 
 	print("[DEBUG] Interactor inicializado!")
 

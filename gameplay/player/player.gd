@@ -100,7 +100,8 @@ func _ready() -> void:
 
 	_setup_crouch()
 	DialogueManager.dialogue_started.connect(_on_dialogue_started)
-	if DialogueManager.is_active:
+	DialogueManager.inspection_started.connect(_on_dialogue_started)
+	if DialogueManager.blocks_interaction():
 		_on_dialogue_started()
 
 

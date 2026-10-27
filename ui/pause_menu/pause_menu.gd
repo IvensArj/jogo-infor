@@ -43,7 +43,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func open_menu() -> void:
-	if is_open:
+	if is_open or DialogueManager.blocks_interaction() or SaveManager.is_loading():
 		return
 
 	is_open = true
