@@ -140,7 +140,8 @@ e nova partida.
 Ainda requer teste manual: sensação de movimento/passagem, posicionamento visual
 com diferentes resoluções, controles físicos/hotplug, diálogos e navegação dos
 menus. Nintendo utiliza fallback textual porque os arquivos correspondentes não
-estão presentes no projeto. NPC e DialogueTrigger mantêm sua ativação independente.
+estão presentes no projeto. O NPC agora usa Interactable, conforme a seção abaixo;
+DialogueTrigger mantém sua ativação automática independente.
 
 Validação executada em 25/10/2026, Windows, Godot 4.7.2: importação headless
 sem erros; suíte nova com 51 verificações e zero falhas, sem erros de script;
@@ -150,4 +151,30 @@ headless sem erros, saída 0. git diff --check passou; novos scripts usam TABs.
 
 ## Próximas extensões
 
-NPCs ainda usam entrada independente; uma integração futura pode reutilizar Interactable.
+O NPC de gameplay/npc/npc.tscn agora herda Interactable na própria raiz Area2D,
+na camada 8 utilizada pelo Interactor. A colisão da antiga InteractionArea fica
+na raiz; o tratamento independente de entrada foi removido. E/Y e o indicador
+usam o fluxo comum. A tentativa exige sobreposição real com o Interactor,
+interação habilitada, requisitos atendidos e diálogo configurado.
+
+dialogue_max_distance (110 pixels) define o raio máximo para começar a conversa;
+o início também exige sobreposição das áreas. A conversa já iniciada admite
+dialogue_distance_tolerance (8 pixels) além desse raio para evitar oscilações.
+São distâncias entre as origens globais do NPC e do jogador. Ajuste no Inspector
+quando mudar as dimensões das áreas; a área de aproximação e o raio de manutenção
+da conversa são verificações distintas.
+
+DialogueManager.start_dialogue(data, source = null) preserva chamadas antigas.
+O NPC informa sua origem; o gerenciador guarda referência fraca e encerra ao
+perder a origem, ao sair da árvore, ao desabilitar o NPC ou ao afastar o jogador.
+Diálogos automáticos sem origem continuam até seu encerramento normal.
+Durante uma conversa e no quadro em que ela termina, Interactor bloqueia novas
+interações e oculta o indicador. O jogador mantém gravidade, colisões e atrito,
+descarta pulo pendente e encerra dash ativo. A pausa real continua parando a árvore.
+
+Execute também tests/physics_dialogue_runner.tscn para a cobertura focada.
+Eventos de conclusão de diálogo devem ser registrados quando o diálogo terminar,
+não quando abrir; o comportamento legado de DialogueTrigger não foi alterado.
+Objetivos podem reutilizar EventRequirement e CompleteEventEffect. Puzzles
+compostos podem combinar requisitos AND; OR pode ser um Resource composto futuro.
+Animações longas exigirão um contrato assíncrono explícito antes de usar await.

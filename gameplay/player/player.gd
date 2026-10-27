@@ -99,6 +99,16 @@ func _ready() -> void:
 	floor_snap_length = 4.0
 
 	_setup_crouch()
+	DialogueManager.dialogue_started.connect(_on_dialogue_started)
+	if DialogueManager.is_active:
+		_on_dialogue_started()
+
+
+func _on_dialogue_started() -> void:
+	# Descarta comandos pendentes sem interromper a queda ou a subida.
+	jump_buffer_timer = 0.0
+	wall_jump_lock = 0.0
+	_finish_dash()
 
 
 # ==========================================
@@ -106,12 +116,8 @@ func _ready() -> void:
 # ==========================================
 
 func _physics_process(delta: float) -> void:
-	if DialogueManager.is_active:
-		velocity = Vector2.ZERO
-		move_and_slide()
-		return
-	
-	var direction := Input.get_axis(
+	var controls_blocked := DialogueManager.blocks_interaction()
+	var direction := 0.0 if controls_blocked else Input.get_axis(
 		"move_left",
 		"move_right"
 	)
@@ -120,11 +126,14 @@ func _physics_process(delta: float) -> void:
 
 	# 1. Recursos e entradas
 	_update_timers(delta, grounded_before)
-	_update_crouch(grounded_before)
-	_update_jump_buffer(delta)
+	_update_crouch(grounded_before, controls_blocked)
+	if controls_blocked:
+		jump_buffer_timer = 0.0
+	else:
+		_update_jump_buffer(delta)
 
 	# 2. Dash tem prioridade sobre o movimento comum
-	if not is_dashing:
+	if not controls_blocked and not is_dashing:
 		_try_start_dash(direction)
 
 	if is_dashing:
@@ -135,12 +144,15 @@ func _physics_process(delta: float) -> void:
 		if not grounded_before:
 			_apply_gravity(delta)
 
-		_update_wall_slide(delta, direction)
+		if not controls_blocked:
+			_update_wall_slide(delta, direction)
 
 		# 4. Processamento dos pulos
-		var jumped := _try_jump(grounded_before)
+		var jumped := false
+		if not controls_blocked:
+			jumped = _try_jump(grounded_before)
+			_apply_jump_cut()
 
-		_apply_jump_cut()
 		_apply_horizontal_movement(
 			delta,
 			direction,
@@ -455,6 +467,7 @@ func _try_start_dash(direction: float) -> void:
 		return
 
 	is_dashing = true
+	velocity.y = 0.0
 
 	dash_direction = (
 		1.0 if direction > 0.0 else -1.0
@@ -478,6 +491,7 @@ func _update_dash(
 	delta: float,
 	grounded: bool
 ) -> void:
+	velocity.y = 0.0
 
 	dash_timer = maxf(
 		dash_timer - delta,
@@ -486,14 +500,12 @@ func _update_dash(
 
 	if dash_timer <= 0.0:
 		_finish_dash()
+		if not grounded:
+			_apply_gravity(delta)
 		return
 
 	# Direção e velocidade permanecem fixas.
 	velocity.x = dash_direction * dash_speed
-
-	# Mantém a gravidade durante o dash aéreo.
-	if not grounded:
-		_apply_gravity(delta)
 
 
 func _finish_dash() -> void:
@@ -616,9 +628,9 @@ func _set_crouching(enabled: bool) -> void:
 		collision_shape.position = standing_position
 
 
-func _update_crouch(grounded: bool) -> void:
+func _update_crouch(grounded: bool, controls_blocked: bool = false) -> void:
 	var holding_crouch := (
-		Input.is_action_pressed("crouch")
+		not controls_blocked and Input.is_action_pressed("crouch")
 	)
 
 	if not is_crouching:

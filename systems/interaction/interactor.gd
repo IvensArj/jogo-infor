@@ -25,6 +25,8 @@ func _ready() -> void:
 
 	area_entered.connect(_on_area_entered)
 	area_exited.connect(_on_area_exited)
+	DialogueManager.dialogue_started.connect(_update_target)
+	DialogueManager.dialogue_finished.connect(_update_target)
 
 	print("[DEBUG] Interactor inicializado!")
 
@@ -77,7 +79,7 @@ func _physics_process(_delta: float) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	print("[DEBUG] Botão de interação pressionado!")
-	if not interaction_enabled:
+	if not interaction_enabled or DialogueManager.blocks_interaction():
 		return
 
 	if event.is_echo():
@@ -90,7 +92,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func try_interact() -> void:
-	if not interaction_enabled:
+	if not interaction_enabled or DialogueManager.blocks_interaction():
 		return
 
 	var player := get_parent() as Node2D
@@ -121,7 +123,7 @@ func try_interact() -> void:
 func _update_target() -> void:
 	var player := get_parent() as Node2D
 
-	if not interaction_enabled or player == null:
+	if not interaction_enabled or player == null or DialogueManager.blocks_interaction():
 		_set_target(null)
 		return
 

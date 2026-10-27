@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://cceyk44h0w64t" path="res://assets/sprites/terrain.png" id="2_yautc"]
 [ext_resource type="PackedScene" uid="uid://drcs7ags8kwxs" path="res://gameplay/npc/npc.tscn" id="4_v45ci"]
 [ext_resource type="PackedScene" uid="uid://bs06gc300x6tx" path="res://ui/dialogue/dialogue_ui.tscn" id="5_48ne7"]
-[ext_resource type="PackedScene" uid="uid://dt7mgt15prhgh" path="res://systems/pause_menu.tscn" id="6_6xh4u"]
+[ext_resource type="PackedScene" uid="uid://dt7mgt15prhgh" path="res://ui/pause_menu/pause_menu.tscn" id="6_6xh4u"]
 [ext_resource type="PackedScene" uid="uid://voui0eo18e22" path="res://scenes/prototypes/test_interactable.tscn" id="7_cyt5c"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_fr1um"]

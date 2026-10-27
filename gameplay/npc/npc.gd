@@ -1,35 +1,35 @@
 
-extends Node2D
+extends Interactable
 
 @export var dialogue: DialogueData
+@export_range(1.0, 500.0, 1.0) var dialogue_max_distance: float = 110.0
+@export_range(0.0, 32.0, 1.0) var dialogue_distance_tolerance: float = 8.0
 
-@onready var interaction_area: Area2D = $InteractionArea
-
-var player_nearby: bool = false
-
-
-func _ready() -> void:
-	interaction_area.body_entered.connect(_on_body_entered)
-	interaction_area.body_exited.connect(_on_body_exited)
+var _dialogue_actor: WeakRef
 
 
-func _on_body_entered(body: Node2D) -> void:
-	if body.is_in_group("Player"):
-		player_nearby = true
+func can_interact(actor: Node2D) -> bool:
+	if not super.can_interact(actor) or DialogueManager.blocks_interaction():
+		return false
+	if dialogue == null or dialogue.lines.is_empty():
+		return false
+	var interactor := actor.get_node_or_null("Interactor") as Interactor
+	return (
+		interactor != null and interactor.interaction_enabled
+		and interactor.overlaps_area(self)
+		and global_position.distance_to(actor.global_position) <= dialogue_max_distance
+	)
 
 
-func _on_body_exited(body: Node2D) -> void:
-	if body.is_in_group("Player"):
-		player_nearby = false
+func _on_interact(actor: Node2D) -> void:
+	_dialogue_actor = weakref(actor)
+	DialogueManager.start_dialogue(dialogue, self)
 
 
-func _unhandled_input(event: InputEvent) -> void:
-	if not player_nearby:
-		return
-
-	if DialogueManager.is_active:
-		return
-
-	if event.is_action_pressed("interact") and not event.is_echo():
-		if DialogueManager.start_dialogue(dialogue):
-			get_viewport().set_input_as_handled()
+func is_dialogue_source_valid() -> bool:
+	var actor := _dialogue_actor.get_ref() as Node2D if _dialogue_actor != null else null
+	return (
+		Interactable.is_live(actor) and enabled
+		and global_position.distance_to(actor.global_position)
+		<= dialogue_max_distance + dialogue_distance_tolerance
+	)

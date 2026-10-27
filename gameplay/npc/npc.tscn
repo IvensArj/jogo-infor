@@ -10,8 +10,13 @@ size = Vector2(72, 72)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1hjnh"]
 size = Vector2(72, 72)
 
-[node name="NPC" type="Node2D" unique_id=1005980664]
+[node name="NPC" type="Area2D" unique_id=1005980664]
+collision_layer = 8
+collision_mask = 0
 script = ExtResource("1_a28jl")
+interaction_name = "NPC"
+action_text = "Conversar"
+show_when_locked = false
 dialogue = ExtResource("2_lr2uj")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1423228364]
@@ -25,7 +30,5 @@ texture = ExtResource("3_eb4aj")
 shape = SubResource("RectangleShape2D_01132")
 disabled = true
 
-[node name="InteractionArea" type="Area2D" parent="." unique_id=1557135911]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea" unique_id=1252436132]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1252436132]
 shape = SubResource("RectangleShape2D_1hjnh")
