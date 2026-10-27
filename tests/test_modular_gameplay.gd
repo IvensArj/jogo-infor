@@ -101,6 +101,7 @@ func _run() -> void:
 	fixture.add_child(inspection_ui)
 	await _test_inspection()
 	_test_abilities()
+	_test_conditions()
 	fixture.free()
 	GameState.import_data(original)
 	print("Modular tests: %d verificações, %d falhas." % [checks, failures])
@@ -240,3 +241,49 @@ func _test_abilities() -> void:
 	probe.free()
 	player.velocity = Vector2.ZERO
 	player.jump_buffer_timer = 0.0
+
+
+func _test_conditions() -> void:
+	check(InteractionRequirement.new().is_met(player), "condição sempre verdadeira")
+	var flag := FlagRequirement.new()
+	flag.flag_id = "modular_tests/missing"
+	flag.expected_value = false
+	check(flag.is_met(player), "flag válida ausente vale false")
+	flag.flag_id = " "
+	check(not flag.is_met(player), "ID inválido não satisfaz flag false")
+	flag.flag_id = "modular_tests/flag"
+	flag.expected_value = true
+	GameState.set_flag(flag.flag_id, true)
+	check(flag.is_met(player), "flag verdadeira")
+	var item := ItemRequirement.new()
+	item.item_id = "modular_tests/item"
+	check(not item.is_met(player), "item ausente bloqueia")
+	GameState.collect_item(item.item_id)
+	check(item.is_met(player), "item coletado permite")
+	var event := EventRequirement.new()
+	event.event_id = "modular_tests/event"
+	GameState.complete_event(event.event_id)
+	check(event.is_met(player), "evento completo")
+	var ability := AbilityRequirement.new()
+	ability.ability_id = "dash"
+	check(ability.is_met(player), "condição de habilidade")
+	var all := ConditionGroup.new()
+	var any := ConditionGroup.new()
+	any.mode = ConditionGroup.Mode.ANY
+	check(all.is_met(player) and not any.is_met(player), "ALL vazio true e ANY vazio false")
+	any.conditions.assign([flag, item])
+	all.conditions.assign([any, event, ability])
+	var before := GameState.export_data()
+	check(all.is_met(player) and any.is_met(player), "grupos ALL/ANY aninhados")
+	check(GameState.export_data() == before, "avaliação não modifica estado")
+	any.conditions.append(all)
+	check(not all.is_met(player), "ciclo indireto interrompe avaliação inteira")
+	any.conditions.clear()
+	all.conditions.clear()
+	all.conditions.append(null)
+	check(not all.is_met(player), "condição ausente é rejeitada")
+	all.conditions.clear()
+	all.conditions.append(all)
+	check(not all.is_met(player), "ciclo direto é rejeitado")
+	all.conditions.clear()
+	check(ConditionGroup.new().is_met(player), "avaliação posterior é independente do ciclo anterior")

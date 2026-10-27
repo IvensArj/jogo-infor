@@ -7,3 +7,7 @@ extends InteractionRequirement
 
 func is_met(_interactor: Node2D) -> bool:
 	return GameState.is_valid_id(flag_id) and GameState.get_flag(flag_id) == expected_value
+
+
+func is_configured() -> bool:
+	return GameState.is_valid_id(flag_id)

@@ -34,3 +34,12 @@ unlock_ability retorna true e emite ability_unlocked somente no primeiro desbloq
 apply_ability_profile é exclusivo do início de uma sessão, nunca da recarga.
 Flags explícitas, inclusive false, persistem no JSON existente; reset limpa o
 progresso e volta ao perfil. O jogador só ganhou guardas, sem alterar parâmetros.
+
+## Condições
+
+Use InteractionRequirement (sempre true), FlagRequirement (expected_value true/false),
+ItemRequirement, EventRequirement, AbilityRequirement ou ConditionGroup no Inspector.
+is_met(actor) retorna bool sem efeitos; is_configured valida configuração.
+ConditionGroup.conditions aceita ALL/ANY aninhados; ALL vazio true, ANY vazio false.
+Ciclos diretos/indiretos e filhos inválidos bloqueiam o grupo com aviso, sem pilha global.
+Flag válida ausente vale false; ID inválido nunca satisfaz um requisito.
