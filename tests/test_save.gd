@@ -360,6 +360,11 @@ func _test_rollback() -> void:
 
 
 func _test_ids() -> void:
+	# Os caminhos públicos das fases também aparecem em saves já existentes.
+	for level_path in ["res://scenes/levels/test_level.tscn", "res://scenes/levels/interaction_demo.tscn"]:
+		_check(not manager._normalize_save(_data(level_path)).is_empty(), "save v2 mantém caminho da fase: " + level_path)
+		var legacy: Dictionary = {"version": 1, "scene": level_path, "player": {"x": 8, "y": 9}}
+		_check(not manager._normalize_save(legacy).is_empty(), "save v1 mantém caminho da fase: " + level_path)
 	for id in ["", " ", " id", "id ", "line\nbreak", "tab\tid", 42]:
 		_check(not GameState.is_valid_id(id), "ID inválido rejeitado: " + str(id))
 	_check(GameState.is_valid_id("Legacy_ID_001"), "ID legado não é reescrito")

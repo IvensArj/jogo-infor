@@ -1,0 +1,60 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://gameplay/objects/door/flag_door.gd" id="1"]
+[ext_resource type="Script" path="res://systems/interaction/requirements/flag_requirement.gd" id="2"]
+[ext_resource type="Script" path="res://systems/interaction/effects/set_flag_effect.gd" id="3"]
+
+[sub_resource type="Resource" id="Requirement"]
+script = ExtResource("2")
+failure_message = "Ative a alavanca primeiro."
+flag_id = "test_level/lever_activated"
+expected_value = true
+
+[sub_resource type="Resource" id="Effect"]
+script = ExtResource("3")
+flag_id = "test_level/door_opened"
+value = true
+
+[sub_resource type="RectangleShape2D" id="Area"]
+size = Vector2(50, 180)
+
+[sub_resource type="RectangleShape2D" id="Solid"]
+size = Vector2(32, 180)
+
+[sub_resource type="Gradient" id="Gradient"]
+colors = PackedColorArray(0.3, 0.4, 0.6, 1, 0.7, 0.8, 1, 1)
+
+[sub_resource type="GradientTexture2D" id="Texture"]
+gradient = SubResource("Gradient")
+width = 32
+height = 180
+
+[node name="FlagDoor" type="Area2D"]
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("1")
+interaction_name = "Porta"
+action_text = "Abrir porta"
+one_shot = true
+requirements = Array[ExtResource("2")]([SubResource("Requirement")])
+effects = Array[ExtResource("3")]([SubResource("Effect")])
+persistent_id = "test_level/door_001"
+state_flag = "test_level/door_opened"
+
+[node name="DoorVisual" type="Sprite2D" parent="."]
+position = Vector2(0, -90)
+modulate = Color(0.55, 0.7, 0.9, 1)
+texture = SubResource("Texture")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -90)
+shape = SubResource("Area")
+
+[node name="PromptAnchor" type="Marker2D" parent="."]
+position = Vector2(0, -180)
+
+[node name="DoorBody" type="StaticBody2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DoorBody"]
+position = Vector2(0, -90)
+shape = SubResource("Solid")

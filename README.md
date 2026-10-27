@@ -51,6 +51,7 @@ O funcionamento, os testes e as limitações do sistema estão na [documentaçã
 | `docs/` | Guias de desenvolvimento e funcionamento dos sistemas. |
 
 Comece pelo [guia de organização e construção de fases](docs/organizacao.md).
+Para criar puzzles pelo Inspector, consulte o [guia de interações](docs/interacoes.md).
 
 ### 🚧 Em desenvolvimento
 

@@ -2,6 +2,7 @@
 class_name InteractionPrompt
 extends Control
 
+
 @export_group("Configuração")
 @export var input_action: StringName = &"interact"
 
@@ -14,6 +15,7 @@ extends Control
 @onready var action_label: Label = $PanelContainer/HBoxContainer/ActionLabel
 
 var current_target: Interactable = null
+var current_interactor: Node2D = null
 
 
 func _ready() -> void:
@@ -31,21 +33,25 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
-	if not is_instance_valid(current_target):
+	if not Interactable.is_live(current_interactor) or not Interactable.is_live(current_target) or not current_target.can_select(current_interactor):
 		hide_prompt()
 		return
 
 	_update_position()
 
 
-func show_target(target: Interactable) -> void:
+func show_target(target: Interactable, interactor: Node2D = null) -> void:
 	if not is_instance_valid(target):
 		hide_prompt()
 		return
 
+	hide_prompt()
 	current_target = target
-
-	action_label.text = target.get_interaction_text()
+	current_interactor = interactor if interactor != null else get_parent() as Node2D
+	current_target.availability_changed.connect(_refresh_text)
+	_refresh_text()
+	if current_target == null:
+		return
 
 	refresh_binding()
 
@@ -56,10 +62,21 @@ func show_target(target: Interactable) -> void:
 
 
 func hide_prompt() -> void:
+	if is_instance_valid(current_target) and current_target.availability_changed.is_connected(_refresh_text):
+		current_target.availability_changed.disconnect(_refresh_text)
 	current_target = null
+	current_interactor = null
 
 	visible = false
 	set_process(false)
+
+
+func _refresh_text() -> void:
+	if not Interactable.is_live(current_interactor) or not Interactable.is_live(current_target) or not current_target.can_select(current_interactor):
+		hide_prompt()
+		return
+	action_label.text = current_target.get_prompt_text(current_interactor)
+	panel.reset_size()
 
 
 func set_input_action(action: StringName) -> void:

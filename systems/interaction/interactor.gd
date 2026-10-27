@@ -30,7 +30,7 @@ func _ready() -> void:
 
 	var prompt: InteractionPrompt = get_parent().get_node_or_null("InteractionPrompt") as InteractionPrompt
 
-	
+
 	if prompt != null:
 		prompt.set_input_action(interaction_action)
 		target_changed.connect(_on_target_changed)
@@ -50,7 +50,7 @@ func _on_target_changed(target: Interactable) -> void:
 	if target == null:
 		prompt.hide_prompt()
 	else:
-		prompt.show_target(target)
+		prompt.show_target(target, get_parent() as Node2D)
 
 
 func _update_facing_direction() -> void:
@@ -105,12 +105,15 @@ func try_interact() -> void:
 
 	var target := current_target
 
-	target.interact(player)
+	var success: bool = target.interact(player)
 
-	if is_instance_valid(target):
+	if not is_instance_valid(self) or not Interactable.is_live(self):
+		return
+	if success and Interactable.is_live(target):
 		interaction_performed.emit(target)
 
-	_update_target()
+	if is_instance_valid(self) and Interactable.is_live(self):
+		_update_target()
 
 
 
@@ -132,15 +135,15 @@ func _update_target() -> void:
 		if not _can_target(target, player):
 			continue
 
-		var priority: int = target.selection_priority
+		var target_priority: int = target.selection_priority
 		var distance: float = _get_target_score(target, player)
 
-		if priority > best_priority:
+		if target_priority > best_priority:
 			best_target = target
-			best_priority = priority
+			best_priority = target_priority
 			best_distance = distance
 
-		elif priority == best_priority:
+		elif target_priority == best_priority:
 			if distance < best_distance:
 				best_target = target
 				best_distance = distance
@@ -182,7 +185,7 @@ func _get_target_score(
 
 
 func _can_target(
-	target: Interactable,
+	target: Variant,
 	player: Node2D
 ) -> bool:
 	if not is_instance_valid(target):
@@ -197,7 +200,7 @@ func _can_target(
 	if not nearby_interactables.has(target):
 		return false
 
-	return target.can_interact(player)
+	return target.can_select(player)
 
 
 func _cleanup_targets() -> void:
