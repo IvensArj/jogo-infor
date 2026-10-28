@@ -21,6 +21,7 @@ var nearby_interactables: Array[Interactable] = []
 
 
 func _ready() -> void:
+	add_to_group("input_interactors")
 	monitoring = true
 
 	area_entered.connect(_on_area_entered)
@@ -29,8 +30,6 @@ func _ready() -> void:
 	DialogueManager.dialogue_finished.connect(_update_target)
 	DialogueManager.inspection_started.connect(_update_target)
 	DialogueManager.inspection_finished.connect(_update_target)
-
-	print("[DEBUG] Interactor inicializado!")
 
 	var prompt: InteractionPrompt = get_parent().get_node_or_null("InteractionPrompt") as InteractionPrompt
 
@@ -80,7 +79,6 @@ func _physics_process(_delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	print("[DEBUG] Botão de interação pressionado!")
 	if not interaction_enabled or DialogueManager.blocks_interaction():
 		return
 
@@ -94,7 +92,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func try_interact() -> void:
-	if not interaction_enabled or DialogueManager.blocks_interaction():
+	if not interaction_enabled or DialogueManager.blocks_interaction() or get_tree().paused or SaveManager.is_loading():
 		return
 
 	var player := get_parent() as Node2D
@@ -233,16 +231,10 @@ func _set_target(target: Interactable) -> void:
 
 
 func _on_area_entered(area: Area2D) -> void:
-	print("[DEBUG] Área detectada: ", area.name)
-
 	if not area is Interactable:
-		print("[DEBUG] Não é um Interactable!")
 		return
 
 	var interactable := area as Interactable
-
-	print("[DEBUG] Objeto interativo encontrado: ",
-	interactable.interaction_name)
 
 	if not nearby_interactables.has(interactable):
 		nearby_interactables.append(interactable)
