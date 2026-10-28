@@ -28,6 +28,24 @@ func _run() -> void:
 	get_tree().change_scene_to_file(SystemsTestSession.ENTRY)
 	await _wait_frames(40)
 	await _capture(args[0].path_join("laboratorio.png"))
+	if InputDeviceManager.touch_test_mode:
+		var hud: CanvasLayer = InputDeviceManager.touch_controls
+		var press := InputEventScreenTouch.new()
+		press.index = 77
+		press.pressed = true
+		press.position = hud.joystick.get_global_transform_with_canvas() * (Vector2(1, 1).normalized() * hud.joystick.max_radius)
+		get_viewport().push_input(press, true)
+		await _wait_frames(12)
+		await _capture(args[0].path_join("joystick_360.png"))
+		var release := InputEventScreenTouch.new()
+		release.index = 77
+		release.position = press.position
+		get_viewport().push_input(release, true)
+		await _wait_frames(2)
+		if Input.is_action_pressed("move_right") or Input.is_action_pressed("crouch"):
+			push_error("Captura visual deixou joystick pressionado.")
+			get_tree().quit(1)
+			return
 	var actor: CharacterBody2D = get_tree().current_scene.get_node("Player")
 	actor.set_physics_process(false)
 	get_tree().current_scene.get_node("AreaA/LongDocument").interact(actor)

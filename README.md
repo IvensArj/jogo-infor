@@ -52,6 +52,7 @@ O funcionamento, os testes e as limitações do sistema estão na [documentaçã
 
 Comece pelo [guia de organização e construção de fases](docs/organizacao.md).
 Para criar puzzles pelo Inspector, consulte o [guia de interações](docs/interacoes.md).
+Para testar teclado, gamepads e o HUD touch no PC, consulte [controles multiplataforma](docs/controles-multiplataforma.md).
 
 ### 🚧 Em desenvolvimento
 

@@ -20,6 +20,11 @@ func _ready() -> void:
 	DialogueManager.inspection_finished.connect(_on_closed)
 
 
+func _process(_delta: float) -> void:
+	if _owns_modal:
+		SafeAreaLayout.fit_control(panel)
+
+
 func open_content(data: InspectionData, source: Node) -> bool:
 	if data == null or not DialogueManager.begin_inspection(source, self):
 		return false

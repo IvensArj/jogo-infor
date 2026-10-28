@@ -63,4 +63,5 @@ scroll_active = false
 
 [node name="Close" type="Button" parent="Panel/Margin/Column"]
 layout_mode = 2
-text = "Fechar — E / Y / Esc / B"
+custom_minimum_size = Vector2(0, 52)
+text = "Fechar"

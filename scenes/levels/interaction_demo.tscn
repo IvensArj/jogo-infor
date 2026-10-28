@@ -33,6 +33,7 @@ polygon = PackedVector2Array(-900, -20, 900, -20, 900, 20, -900, 20)
 
 [node name="Door" parent="." unique_id=45218654 instance=ExtResource("2")]
 position = Vector2(480, 400)
+one_shot = false
 
 [node name="Lever" parent="." unique_id=381729014 instance=ExtResource("3")]
 position = Vector2(170, 400)

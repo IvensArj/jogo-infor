@@ -21,6 +21,14 @@ func _ready() -> void:
 	resume_button.pressed.connect(close_menu)
 	save_button.pressed.connect(_on_save)
 	main_menu_button.pressed.connect(_on_main_menu)
+	for button: Button in [resume_button, save_button, main_menu_button]:
+		button.custom_minimum_size = Vector2(240, 52)
+	$PausePanel/CenterContainer/VBoxContainer.add_theme_constant_override("separation", 12)
+
+
+func _process(_delta: float) -> void:
+	if is_open:
+		SafeAreaLayout.fit_control($PausePanel/CenterContainer)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -52,6 +60,7 @@ func open_menu() -> void:
 	panel.show()
 
 	get_tree().paused = true
+	InputDeviceManager.refresh_touch_controls()
 
 	resume_button.grab_focus()
 
@@ -64,6 +73,7 @@ func close_menu() -> void:
 
 	panel.hide()
 	get_tree().paused = false
+	InputDeviceManager.refresh_touch_controls()
 
 
 func _on_save() -> void:
