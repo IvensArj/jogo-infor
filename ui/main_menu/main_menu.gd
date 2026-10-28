@@ -28,7 +28,12 @@ func _ready() -> void:
 		exit_button
 	]
 
+	# Esconder antes de calcular vizinhos mantém navegação circular no mobile.
+	exit_button.visible = not OS.has_feature("mobile")
 	_setup_navigation()
+	for button in menu_buttons:
+		button.custom_minimum_size = Vector2(240, 52)
+	$CenterContainer/VBoxContainer.add_theme_constant_override("separation", 12)
 
 	# Aplica o foco depois que a interface estiver pronta.
 	_focus_first_button.call_deferred()
@@ -37,6 +42,10 @@ func _ready() -> void:
 # ==========================================
 # NAVEGAÇÃO
 # ==========================================
+
+func _process(_delta: float) -> void:
+	SafeAreaLayout.fit_control($CenterContainer)
+
 
 func _setup_navigation() -> void:
 	for button in menu_buttons:
@@ -47,7 +56,7 @@ func _setup_navigation() -> void:
 	var available_buttons: Array[Button] = []
 
 	for button in menu_buttons:
-		if not button.disabled:
+		if not button.disabled and button.visible:
 			available_buttons.append(button)
 
 	if available_buttons.is_empty():

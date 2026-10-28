@@ -8,6 +8,7 @@ extends CanvasLayer
 @onready var speaker_name: Label = $DialoguePanel/MarginContainer/VBoxContainer/SpeakerName
 @onready var dialogue_text: RichTextLabel = $DialoguePanel/MarginContainer/VBoxContainer/DialogueText
 @onready var continue_indicator: Label = $DialoguePanel/MarginContainer/VBoxContainer/ContinueIndicator
+@onready var advance_button: Button = $DialoguePanel/MarginContainer/VBoxContainer/Advance
 
 var is_typing: bool = false
 var character_progress: float = 0.0
@@ -15,6 +16,9 @@ var character_progress: float = 0.0
 
 func _ready() -> void:
 	panel.hide()
+	advance_button.pressed.connect(advance)
+	InputDeviceManager.presentation_changed.connect(_refresh_advance_button)
+	_refresh_advance_button()
 
 	DialogueManager.dialogue_started.connect(_on_dialogue_started)
 	DialogueManager.line_changed.connect(_on_line_changed)
@@ -22,6 +26,10 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	if panel.visible:
+		var area := SafeAreaLayout.viewport_rect(get_viewport()).grow(-16.0)
+		SafeAreaLayout.fit_control(panel, Vector2(16, 16))
+		panel.offset_top = area.end.y - area.size.y * 0.46
 	if not is_typing:
 		return
 
@@ -46,17 +54,24 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("interact") and not event.is_echo():
 		get_viewport().set_input_as_handled()
 		
-		if Engine.get_process_frames() == DialogueManager.started_frame:
-			get_viewport().set_input_as_handled()
-			return
-		
-		if is_typing:
-			_finish_typing()
-		else:
-			DialogueManager.next_line()
+		advance()
+
+
+func advance() -> void:
+	if not DialogueManager.is_active or get_tree().paused or Engine.get_process_frames() == DialogueManager.started_frame:
+		return
+	if is_typing:
+		_finish_typing()
+	else:
+		DialogueManager.next_line()
+
+
+func _refresh_advance_button() -> void:
+	advance_button.visible = InputDeviceManager.wants_touch_controls()
 
 
 func _on_dialogue_started() -> void:
+	_refresh_advance_button()
 	panel.show()
 
 
